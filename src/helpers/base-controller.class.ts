@@ -35,7 +35,7 @@ export abstract class BaseController {
     private casters: DefaultCasters,
     private generateTraceId: (req: Request) => string,
     private getLogger: (funcName: string, path?: string) => GenericLogger,
-    private middlewareGenerator: IMiddlewareGenerator,
+    private middlewareGenerator: IMiddlewareGenerator | undefined,
     private hideLogsForErrors: string[]
   ) {
     this.endpointInfo = Reflect.getMetadata(endpointMetaSymbol, this)
@@ -98,10 +98,12 @@ export abstract class BaseController {
     method: REST_METHODS | null
   ): CreatedEndpointInfo {
     const endpointPath = `${basePath}/${endpoint.path}`
-    const path = `/${endpointPath.toLowerCase()}`.replace(/\/+/g, '/')
+    const path = `/${endpointPath}`.replace(/\/+/g, '/')
     const endpointMethod: REST_METHODS = (method || this.getMethod(endpoint.path)).toUpperCase() as REST_METHODS
 
-    const middleware = this.middlewareGenerator.getMiddleware(this.controllerMeta.options, endpoint.options)
+    const middleware = this.middlewareGenerator
+      ? this.middlewareGenerator.getMiddleware(this.controllerMeta.options, endpoint.options)
+      : []
 
     const endpointFunc = this.createEndpointFunc(
       endpoint.descriptor.value,
@@ -111,6 +113,7 @@ export abstract class BaseController {
       endpoint.target
     )
     middleware.push(endpointFunc)
+    // @ts-ignore
     router[endpointMethod.toLowerCase()](path, ...middleware)
 
     return {
@@ -157,12 +160,12 @@ export abstract class BaseController {
     return function actualEndpointController(req: Request, res: Response) {
       const traceId = generateTraceId ? generateTraceId(req) : BaseController.generateCallStackId()
       try {
-        const callStackIdPattern = `__AQ_CALL_STACK_${traceId}__END_OF_AQ__`
+        const callStackIdPattern = `__REEF_CALL_STACK_${traceId}__END_OF_REEF__`
         const funcWrapper: { [key: string]: () => Promise<void> } = {}
         funcWrapper[callStackIdPattern] = async function tackerFunc() {
           const funcDef = `${targetClass?.constructor?.name}.${endpointFunc?.name}`
           const logger = getLogger(funcDef, path)
-          const endpointVars = BaseController.getEndpointInputVars(req, res, endpointMeta, casters, logger)
+          const endpointVars = BaseController.getEndpointInputVars(req, res, endpointMeta, casters, logger, funcDef)
           const loggerTitle = `${path} -> ${funcDef}`
           logger.info(`${loggerTitle} endpoint invoked`)
           const response: unknown = endpointFunc(...endpointVars)
@@ -187,7 +190,7 @@ export abstract class BaseController {
    * @param {Promise<unknown> | unknown} payload - the result of the invocation
    * @param {Response} res - the express Response Object
    * @param traceId
-   * @param {Logger} logger - the logger
+   * @param {GenericLogger} logger - the logger
    * @param hideLogsForErrors
    * @param loggerTitle
    * @return {void}
@@ -201,7 +204,7 @@ export abstract class BaseController {
     hideLogsForErrors: string[],
     loggerTitle?: string
   ) {
-    let endpointErr
+    let endpointErr: (Error | undefined)
     Promise.resolve(payload)
       .then((data: unknown) => {
         try {
@@ -232,7 +235,7 @@ export abstract class BaseController {
    * Function that handles the unsuccessful invocation of an endpoint function
    * @param {Error} err - raised the error
    * @param {Response} res - the express Response Object
-   * @param {Logger} logger - the logger
+   * @param {GenericLogger} logger - the logger
    * @param {string[]} hideLogsForErrors - a list of error class names that won't be logged
    * @return {void}
    * @private
@@ -261,8 +264,9 @@ export abstract class BaseController {
    * @param {Request} req - the express Request object
    * @param {Response} res - the express Response object
    * @param {EndpointParamMeta[]} endpointParamMeta - the parameter info of the controller method
-   * @param {Casters} casters - the Casters
+   * @param {DefaultCasters} casters - the Casters
    * @param logger
+   * @param funcName
    * @return {unknown[]}
    * @private
    */
@@ -271,13 +275,19 @@ export abstract class BaseController {
     res: Response,
     endpointParamMeta: EndpointParamMeta[],
     casters: DefaultCasters,
-    logger: GenericLogger
+    logger: GenericLogger,
+    funcName: string,
   ): unknown[] {
     // eslint-disable-next-line no-param-reassign
     if (!endpointParamMeta) endpointParamMeta = []
     const inputVars = Array(endpointParamMeta.length)
     // eslint-disable-next-line no-restricted-syntax
-    for (const meta of endpointParamMeta) {
+    for (const [index, meta] of endpointParamMeta.entries()) {
+      if (!meta) {
+        logger.warn(`endpoint function input variable has no decorator on index ${index}`)
+        continue;
+
+      }
       inputVars[meta.index] = BaseController.getParamVar(req, res, meta, casters, logger)
     }
 
@@ -301,9 +311,10 @@ export abstract class BaseController {
     casters: DefaultCasters,
     logger: GenericLogger
   ) {
-    if (meta.decorator === 'LOGGER') {
-      return logger
-    }
+    // if (meta.decorator === 'LOGGER') {
+    //   console.log('returning logger', logger)
+    //   return logger
+    // }
     return meta.actions.getValue(req, res, casters, meta)
   }
 
@@ -334,7 +345,7 @@ export abstract class BaseController {
     const logger = this.getLogger('Endpoint Information')
     const controllerInfo = {
       Controller: controllerName,
-      endpoints: [],
+      endpoints: [] as unknown[],
     }
     for (const ep of endpointsInfo) {
       controllerInfo.endpoints.push({

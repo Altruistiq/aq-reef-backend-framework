@@ -1,12 +1,14 @@
 import { AnyError, EndpointParamMeta } from './aq-base.types'
 
 export class DefaultCasters {
-  private ErrorClass: AnyError<Error> = Error
+  protected ErrorClass: AnyError<Error> = Error
 
   public cast(meta: EndpointParamMeta, rawValue: unknown): unknown {
+    // @ts-ignore
     if (!meta.cast || !this[meta.type.name]) return rawValue
     if (rawValue instanceof meta.type) return rawValue
     try {
+      // @ts-ignore
       return this[meta.type.name](rawValue)
     } catch (err) {
       throw new this.ErrorClass(`cannot convert param '${meta.path || meta.name}' to type '${meta.type.name}'`)

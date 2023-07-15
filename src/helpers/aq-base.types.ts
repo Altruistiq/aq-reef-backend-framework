@@ -67,12 +67,10 @@ export type ParamDecorator = (
 ) => void
 
 export interface IEndpointOptions {
-  features?: string[]
-  limits?: unknown
+  [key: string]: unknown
 }
 
 export interface GenericLogger {
-  debug: (...args: unknown[]) => void
   info: (...args: unknown[]) => void
   log: (...args: unknown[]) => void
   warn: (...args: unknown[]) => void
@@ -101,4 +99,11 @@ export enum REST_METHODS {
   PATCH = 'patch',
   POST = 'post',
   PUT = 'put',
+}
+
+export type ControllerBundle = {
+  baseRoute: string
+  controllerDirPath: string
+  controllerFileNamePattern?: RegExp
+  onlyTsFiles: boolean
 }

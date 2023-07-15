@@ -88,7 +88,7 @@ export function Delete<C extends BaseController>(
 
 /**
  * Function that stores the endpoint information in an array format
- * on the controller's class metadata on the "aq:decorators:endpoint" symbol
+ * on the controller's class metadata on the "reef:decorators:endpoint" symbol
  * @param {string} path - the endpoint sub-path
  * @param {IEndpointOptions} options - endpoint options
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response

@@ -1,0 +1,7 @@
+{
+  "extension": ["ts"],
+  "spec": ["./tests/start.ts", "./tests/integration/**/*.spec.ts"],
+  "watch-files": ["./tests/integration/**/*.ts", "./tests/test-server/**/*.ts"],
+  "require": ["./tests/compiler.js"],
+  "watch": true
+}
