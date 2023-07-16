@@ -2,10 +2,12 @@ import {Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, Res}
 import {BaseController} from "../reef/helpers/base-controller.class";
 import {Request, Response} from "express"
 import {FooService} from "../test-helpers/foo.service";
+import {AuthRoles} from "../reef-extends/middleware.decorators";
+import {USER_ROLE} from "../reef-extends/basic.defs";
 
 
-@Controller('foo')
-export default class TestController extends BaseController {
+@Controller('bar')
+export default class BarController extends BaseController {
 
   @Get('/')
   simpleGet(@Query() val: string) {
@@ -56,5 +58,12 @@ export default class TestController extends BaseController {
     FooService.foo()
 
     return { [headerName]: req.header(headerName) }
+  }
+
+
+  @AuthRoles(USER_ROLE.ADMIN, USER_ROLE.USER)
+  @Get('custom-decorator-role')
+  customDecoratorRole() {
+    return { success: true }
   }
 }

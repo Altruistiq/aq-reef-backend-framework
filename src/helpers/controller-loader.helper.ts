@@ -122,6 +122,7 @@ export class ControllerLoaderHelper {
     const {controllerDirPath, controllerFileNamePattern, onlyTsFiles, baseRoute} = controllerBundle
     const allowedExtRegexp = onlyTsFiles ? /^.+?(\.ts$)/g : /^.+?(\.ts$)|(\.js$)/g
     const files = readdirSync(controllerDirPath)
+    const controllerLoadFns = []
 
     for (const filename of files) {
       // eslint-disable-next-line no-param-reassign
@@ -138,7 +139,6 @@ export class ControllerLoaderHelper {
 
       const filepath = join(controllerDirPath, filename)
 
-      const controllerLoadFns = []
 
       controllerLoadFns.push(() =>
         import(filepath).then(importPayload => {
@@ -155,8 +155,8 @@ export class ControllerLoaderHelper {
           )
         })
       )
-
-      return controllerLoadFns.reduce((accPromise, currPromise) => accPromise.then(currPromise), Promise.resolve()) as Promise<void>
     }
+
+    return controllerLoadFns.reduce((accPromise, currPromise) => accPromise.then(currPromise), Promise.resolve()) as Promise<void>
   }
 }

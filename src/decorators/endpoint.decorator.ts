@@ -117,3 +117,12 @@ function defineEndpoint<C extends BaseController>(
     Reflect.defineMetadata(endpointMetaSymbol, endpointInfo, target)
   }
 }
+
+export function createEndpointMiddleware(subject: symbol, params: unknown) {
+  return function (target: BaseController, methodName: string, descriptor: PropertyDescriptor) {
+    const controllerMiddlewareInfo = Reflect.getMetadata(subject, target) || {}
+    if (!controllerMiddlewareInfo[methodName]) controllerMiddlewareInfo[methodName] = []
+    controllerMiddlewareInfo[methodName].push(params)
+    Reflect.defineMetadata(subject, controllerMiddlewareInfo, target)
+  }
+}

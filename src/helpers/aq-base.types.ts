@@ -7,8 +7,14 @@ import { BaseController } from './base-controller.class'
 export type CasterClass<T extends DefaultCasters> = new (...args: any[]) => T & typeof DefaultCasters
 
 export type AnyError<T extends Error> = new (...args: any[]) => T
+
+export type MiddlewareGenericOptions = { [key: symbol]: unknown[] }
 export interface IMiddlewareGenerator {
-  getMiddleware(controllerOptions: IEndpointOptions, endpointOptions: IEndpointOptions): RequestHandler[]
+  getMiddlewareSymbols(): symbol[]
+  getMiddleware(
+    controllerOptions: MiddlewareGenericOptions,
+    endpointOptions: MiddlewareGenericOptions,
+  ): RequestHandler[]
 }
 
 export type MiddlewareGeneratorClass = new (...args: any[]) => IMiddlewareGenerator

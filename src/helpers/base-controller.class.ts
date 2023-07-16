@@ -1,8 +1,7 @@
 import 'reflect-metadata'
 import express, { Express, Request, Response, Router } from 'express'
-import _ from 'lodash'
 
-import { controllerMetaSymbol, endpointMetaSymbol, paramMetaSymbol } from '../decorators/symbols'
+import {controllerMetaSymbol, endpointMetaSymbol, middlewareControllerKey, paramMetaSymbol} from '../decorators/symbols'
 
 import {
   ControllerMeta,
@@ -15,6 +14,7 @@ import {
 import { DefaultCasters } from './default-casters.helper'
 import { getTraceId } from './trace-id.helper'
 import {ApiError, ResError} from "../errors";
+import Base = Mocha.reporters.Base;
 
 /**
  * BaseController is the class that every controller should extend.
@@ -101,9 +101,6 @@ export abstract class BaseController {
     const path = `/${endpointPath}`.replace(/\/+/g, '/')
     const endpointMethod: REST_METHODS = (method || this.getMethod(endpoint.path)).toUpperCase() as REST_METHODS
 
-    const middleware = this.middlewareGenerator
-      ? this.middlewareGenerator.getMiddleware(this.controllerMeta.options, endpoint.options)
-      : []
 
     const endpointFunc = this.createEndpointFunc(
       endpoint.descriptor.value,
@@ -112,6 +109,8 @@ export abstract class BaseController {
       path,
       endpoint.target
     )
+
+    const middleware = this.getMiddleware(endpoint.target, methodName)
     middleware.push(endpointFunc)
     // @ts-ignore
     router[endpointMethod.toLowerCase()](path, ...middleware)
@@ -123,6 +122,36 @@ export abstract class BaseController {
       endpointParamMeta,
     }
   }
+
+  getMiddleware(target: BaseController, methodName: string) {
+    const options = {
+      controllerOptions: undefined,
+      endpointOptions: undefined,
+    }
+
+    if (!this.middlewareGenerator) return []
+
+    const symbols = this.middlewareGenerator.getMiddlewareSymbols()
+
+
+    for (const mwSymbol of symbols) {
+      const meta = Reflect.getMetadata(mwSymbol, target)
+
+      if (meta && meta[methodName]) {
+        if (!options.endpointOptions) options.endpointOptions = { [mwSymbol]: [] }
+        options.endpointOptions[mwSymbol].push(...meta[methodName])
+      }
+
+      if (meta && meta[controllerMetaSymbol]) {
+        if (!options.controllerOptions) options.controllerOptions = { [mwSymbol]: [] }
+        options.controllerOptions[mwSymbol].push(...meta[controllerMetaSymbol])
+      }
+    }
+
+    const { controllerOptions, endpointOptions } = options
+    return this.middlewareGenerator.getMiddleware(controllerOptions, endpointOptions)
+  }
+
 
   /**
    * Generates a pseudo-random unique id (based on timestamp and 6 digit random)

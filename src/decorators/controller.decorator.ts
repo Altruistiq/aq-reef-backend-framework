@@ -2,7 +2,7 @@ import 'reflect-metadata'
 
 import { IEndpointOptions } from '../helpers/aq-base.types'
 
-import { controllerMetaSymbol } from './symbols'
+import {controllerMetaSymbol, middlewareControllerKey} from './symbols'
 
 /**
  * Controller decorator function.
@@ -21,5 +21,14 @@ export function Controller(basePath: string, options: IEndpointOptions = {}) {
     }
 
     Reflect.defineMetadata(controllerMetaSymbol, controllerMeta, constructor)
+  }
+}
+
+export function createControllerMiddleware(subject: symbol, params: unknown) {
+  return function (constructor) {
+    const controllerMiddlewareInfo = Reflect.getMetadata(subject, constructor) || {}
+    if (!controllerMiddlewareInfo[middlewareControllerKey]) controllerMiddlewareInfo[middlewareControllerKey] = []
+    controllerMiddlewareInfo[middlewareControllerKey].push(params)
+    Reflect.defineMetadata(subject, controllerMiddlewareInfo, constructor)
   }
 }

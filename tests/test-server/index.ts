@@ -4,6 +4,7 @@ import {TestCasters} from "./test-helpers/test-casters.class";
 import {TestErrorHandler} from "./test-helpers/error.handler";
 import {ControllerLoaderHelper} from "./reef/helpers/controller-loader.helper";
 import {GenericLogger} from "./reef/helpers/aq-base.types";
+import {MiddlewareGenerator} from "./reef-extends/middleware-generator.class";
 
 function getLogger(funcName: string, path?: string): GenericLogger {
   return {
@@ -24,6 +25,7 @@ export async function initializeServer() {
   clh
     .setCasters(TestCasters)
     .setControllerBundle('/api/v1/', join(__dirname, 'controllers'), /^.+\.controller/g, false)
+    .setMiddlewareGenerator(MiddlewareGenerator)
     .addErrorHandler(TestErrorHandler)
     .setGetLoggerFn(getLogger)
     // .setMiddlewareGenerator(AqMiddlewareGenerator)
