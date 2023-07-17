@@ -18,21 +18,18 @@ function getLogger(funcName: string, path?: string): GenericLogger {
 export async function initializeServer() {
   const app: Express = express()
 
-  app.use(express.json())
-  app.use(express.urlencoded({extended: false}))
-
   const clh = new ControllerLoaderHelper(app)
-  clh
+  await clh
+    .addGlobalMiddleware(express.json())
+    .addGlobalMiddleware(express.urlencoded({extended: false}))
     .setCasters(TestCasters)
     .setControllerBundle('/api/v1/', join(__dirname, 'controllers'), /^.+\.controller/g, false)
     .setMiddlewareGenerator(MiddlewareGenerator)
     .addErrorHandler(TestErrorHandler)
     .setGetLoggerFn(getLogger)
-    // .setMiddlewareGenerator(AqMiddlewareGenerator)
+    .launch()
+
   // .setGetTraceIdFunction((req: Request) => req.headers.get('x-trace-id'))
-  await clh.launch()
-
-
   return app
 }
 
