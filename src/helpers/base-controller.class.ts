@@ -14,7 +14,6 @@ import {
 import { DefaultCasters } from './default-casters.helper'
 import { getTraceId } from './trace-id.helper'
 import {ApiError, ResError} from "../errors";
-import Base = Mocha.reporters.Base;
 
 /**
  * BaseController is the class that every controller should extend.
@@ -25,7 +24,7 @@ import Base = Mocha.reporters.Base;
  * And creates the proper routes and endpoints with the proper middleware
  */
 export abstract class BaseController {
-  private endpointInfo: EndpointInfo[]
+  private readonly endpointInfo: EndpointInfo[]
 
   private controllerMeta: ControllerMeta
 
@@ -103,7 +102,7 @@ export abstract class BaseController {
 
 
     const endpointFunc = this.createEndpointFunc(
-      endpoint.descriptor.value,
+      endpoint.descriptor.value.bind(this),
       endpointParamMeta,
       endpoint.autoResponse,
       path,
@@ -112,8 +111,8 @@ export abstract class BaseController {
 
     const middleware = this.getMiddleware(endpoint.target, methodName)
     middleware.push(endpointFunc)
-    // @ts-ignore
-    router[endpointMethod.toLowerCase()](path, ...middleware)
+
+    router[REST_METHODS[endpointMethod]](path, ...middleware)
 
     return {
       HTTPMethod: endpointMethod,

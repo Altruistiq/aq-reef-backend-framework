@@ -1,4 +1,4 @@
-import {DefaultCasters} from "../../../src/helpers/default-casters.helper";
+import {DefaultCasters} from "../reef/helpers/default-casters.helper";
 
 export class TestCasters extends DefaultCasters {
   Date(input: unknown) {

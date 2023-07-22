@@ -4,7 +4,7 @@ import { get } from 'lodash'
 
 import { EndpointParamMeta, IParamDecoratorActions, ParamDecorator } from '../helpers/aq-base.types'
 
-import { DefaultCasters } from '../helpers/default-casters.helper'
+import { DefaultCasters } from '../helpers'
 
 import { paramMetaSymbol } from './symbols'
 

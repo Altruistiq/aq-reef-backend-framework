@@ -9,7 +9,7 @@ import {ErrorRequestHandler} from 'express-serve-static-core'
 import {
   CasterClass,
   ControllerBundle,
-  GenericLogger, IEndpointOptions,
+  GenericLogger,
   IMiddlewareGenerator,
   MiddlewareGeneratorClass
 } from './aq-base.types'
@@ -82,6 +82,7 @@ export class ControllerLoaderHelper {
   }
 
   async launch() {
+    Error.stackTraceLimit = Infinity
     setLoggerFn(this.getLoggerFn)
     this.globalMiddleware.forEach(m => this.app.use(m))
     const promises = this.preRunList.map(f => f())

@@ -1,9 +1,9 @@
 import {Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, Res} from "../reef/decorators";
-import {BaseController} from "../reef/helpers/base-controller.class";
 import {Request, Response} from "express"
 import {FooService} from "../test-helpers/foo.service";
 import {AuthRoles} from "../reef-extends/middleware.decorators";
 import {USER_ROLE} from "../reef-extends/basic.defs";
+import {BaseController} from "../reef/helpers";
 
 
 @Controller('bar')

@@ -26,10 +26,10 @@ export async function initializeServer() {
     .setControllerBundle('/api/v1/', join(__dirname, 'controllers'), /^.+\.controller/g, false)
     .setMiddlewareGenerator(MiddlewareGenerator)
     .addErrorHandler(TestErrorHandler)
+    // .setGetTraceIdFunction((res) =>  res.header('x-aws-trace'))
     .setGetLoggerFn(getLogger)
     .launch()
 
-  // .setGetTraceIdFunction((req: Request) => req.headers.get('x-trace-id'))
   return app
 }
 
