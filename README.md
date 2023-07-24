@@ -1,5 +1,28 @@
 # Reef Typescript Web Framework
 
+
+## Table of Contents
+
+#### Installation
+- [Bootstrap the framework](#bootstrap-the-framework)
+- [Create a controller bundle](#create-a-controller-bundle)
+- [Add global middleware](#add-global-middleware)
+- [Set the API incoming parameters casters](#set-the-api-incoming-parameters-casters)
+- [Set the error handler](#set-the-error-handler)
+- [Set the logger](#set-the-logger)
+- [Set the trace id function](#set-the-trace-id-function)
+- [Launch the framework](#launch-the-framework)
+
+#### Controllers
+- [Create a controller](#create-a-controller)
+- [Endpoint decorators](#endpoint-decorators)
+- [Endpoint parameters decorators](#endpoint-parameters-decorators)
+- [Defining custom endpoint variable decorators](#defining-custom-endpoint-variable-decorators)
+
+#### Middleware
+- [Fine grain control over the endpoints middleware](#fine-grain-control-over-the-endpoint-middlewarebr-and-custom-middleware-decorators)
+
+
 ## Bootstrap the framework
 
 In order to bootstrap the framework, you need to create a new `Reef` class passing the express app:
