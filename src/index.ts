@@ -1,3 +1,3 @@
-import 'decorators'
-import 'helpers'
-import 'errors'
+import './decorators'
+import './helpers'
+import './errors'
