@@ -1,0 +1,29 @@
+I have developed a nodejs/typescript web framework based on expressjs called reef
+and I want you to write the documentation, lets start with the bootstraping.
+first thing is to create an express app and create a controller bundle.
+In the controller bundle you set the base url path, the path of the controller files, a regex to match the filename (optional)
+and a boolean that sets if the framework will search only for ts file or for either ts and js files
+
+ e.g
+
+Stuff that I want to mention: how to install how to bootstrap, covering:
+- setting controller bundles
+e.g
+```typescript
+export async function initializeServer() {
+  const app: Express = express()
+
+  const clh = new ControllerLoaderHelper(app)
+  await clh
+    .setControllerBundle('/api/v1/', join(__dirname, 'controllers'), /^.+\.controller/g, false)
+    .launch()
+
+  return app
+}
+```
+
+
+# Reef Typescript Web Framework
+
+
+

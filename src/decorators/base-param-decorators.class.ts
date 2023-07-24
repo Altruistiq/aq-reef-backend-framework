@@ -9,7 +9,7 @@ import { DefaultCasters } from '../helpers'
 import { paramMetaSymbol } from './symbols'
 
 export function UnifiedParam(path?: string, autoCast = true) {
-  return defineIncomingVariable(path, autoCast, {
+  return createParamDecoratorInternal(path, autoCast, {
     getValue: (
       req: Request,
       res: Response,
@@ -23,7 +23,7 @@ export function UnifiedParam(path?: string, autoCast = true) {
   })
 }
 export function Param(path?: string, autoCast = true) {
-  return defineIncomingVariable(path, autoCast, {
+  return createParamDecoratorInternal(path, autoCast, {
     getValue: (
       req: Request,
       res: Response,
@@ -37,7 +37,7 @@ export function Param(path?: string, autoCast = true) {
 }
 
 export function Body(path?: string, autoCast = true) {
-  return defineIncomingVariable(path, autoCast, {
+  return createParamDecoratorInternal(path, autoCast, {
     getValue: (
       req: Request,
       res: Response,
@@ -51,7 +51,7 @@ export function Body(path?: string, autoCast = true) {
 }
 
 export function Query(path?: string, autoCast = true) {
-  return defineIncomingVariable(path, autoCast, {
+  return createParamDecoratorInternal(path, autoCast, {
     getValue: (
       req: Request,
       res: Response,
@@ -65,18 +65,18 @@ export function Query(path?: string, autoCast = true) {
 }
 
 export function Res() {
-  return defineIncomingVariable('', false, {
+  return createParamDecoratorInternal('', false, {
     getValue: (req: Request, res: Response): unknown | Promise<unknown> => res,
   })
 }
 
-export function Req(path?: string, autoCast = true) {
-  return defineIncomingVariable(path, autoCast, {
+export function Req() {
+  return createParamDecoratorInternal('', false, {
     getValue: (req: Request): unknown | Promise<unknown> => req,
   })
 }
 
-export function defineIncomingVariable(
+function createParamDecoratorInternal(
   reqPath: string | null,
   autoCast: boolean,
   actions: IParamDecoratorActions,
@@ -105,6 +105,10 @@ export function defineIncomingVariable(
     }
     Reflect.defineMetadata(paramMetaSymbol, paramMeta, target, methodName)
   }
+}
+
+export function createParamDecorator(actions: IParamDecoratorActions) {
+  return createParamDecoratorInternal(null, false, actions)
 }
 
 /**

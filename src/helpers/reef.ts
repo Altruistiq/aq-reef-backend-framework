@@ -19,7 +19,7 @@ import {setLoggerFn} from "../decorators/log.decorator";
 /**
  * Class that find and loads the controllers
  */
-export class ControllerLoaderHelper {
+export class Reef {
   constructor(app: Express) {
     this.app = app
   }

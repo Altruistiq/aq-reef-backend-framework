@@ -136,4 +136,14 @@ describe("Testing Decorators", async () => {
     assert.equal(status, 404)
 
   })
+
+  it('should be able to create custom param decorators', async () => {
+    const { body } = await chai
+      .request(global._expressApp)
+      .get(`/api/v1/bar/custom-param-decorator-test`)
+      .set('x-test-header', 'gotcha')
+      .send()
+    assert.equal(body.header, 'gotcha')
+
+  })
 })

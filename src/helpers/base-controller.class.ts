@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import express, { Express, Request, Response, Router } from 'express'
 
-import {controllerMetaSymbol, endpointMetaSymbol, middlewareControllerKey, paramMetaSymbol} from '../decorators/symbols'
+import {controllerMetaSymbol, endpointMetaSymbol, paramMetaSymbol} from '../decorators/symbols'
 
 import {
   ControllerMeta,

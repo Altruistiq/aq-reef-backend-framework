@@ -44,7 +44,6 @@ export type EndpointInfo = {
   method: REST_METHODS
   methodName: string
   path: string
-  options: IEndpointOptions
   target: any
 }
 
@@ -57,7 +56,6 @@ export type CreatedEndpointInfo = {
 
 export type ControllerMeta = {
   basePath: string
-  options: IEndpointOptions
 }
 
 export type EndpointDecorator<C extends BaseController> = (

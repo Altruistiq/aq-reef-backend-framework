@@ -10,12 +10,12 @@ export class MiddlewareGenerator implements IMiddlewareGenerator {
     endpointOptions: MiddlewareOptions
   ): RequestHandler[] {
     const roleOptions = this.getRoleOptions(endpointOptions, controllerOptions)
-    const roleMiddlewares = this.getRoleMiddleware(roleOptions.flat())
+    const roleMiddlewares = this.getRoleMiddleware(roleOptions)
     return [...roleMiddlewares];
   }
 
   getMiddlewareSymbols(): symbol[] {
-    return [ roleSymbol, limitSymbol ];
+    return [ roleSymbol ];
   }
 
   getRoleMiddleware(roleOptions): RequestHandler[] {
@@ -24,8 +24,8 @@ export class MiddlewareGenerator implements IMiddlewareGenerator {
   }
 
   getRoleOptions(endpointOptions: MiddlewareOptions, controllerOptions: MiddlewareOptions): USER_ROLE[] {
-    const endpointRoles = endpointOptions && endpointOptions[roleSymbol]
-    const controllerRoles = controllerOptions && controllerOptions[roleSymbol]
+    const endpointRoles = endpointOptions && endpointOptions[roleSymbol].flat()
+    const controllerRoles = controllerOptions && controllerOptions[roleSymbol].flat()
 
     return endpointRoles || controllerRoles || []
   }

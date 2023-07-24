@@ -4,6 +4,7 @@ import {FooService} from "../test-helpers/foo.service";
 import {AuthRoles} from "../reef-extends/middleware.decorators";
 import {USER_ROLE} from "../reef-extends/basic.defs";
 import {BaseController} from "../reef/helpers";
+import {Header} from "../reef-extends/param.decorators";
 
 
 @Controller('bar')
@@ -37,7 +38,7 @@ export default class BarController extends BaseController {
     return { urlParam }
   }
 
-  @Get('decorator-res-test', null, false)
+  @Get('decorator-res-test', false)
   resParamTest(@Res() res: Response) {
     res.json({ success: true })
 
@@ -65,5 +66,10 @@ export default class BarController extends BaseController {
   @Get('custom-decorator-role')
   customDecoratorRole() {
     return { success: true }
+  }
+
+  @Get('custom-param-decorator-test')
+  customParamDecoratorTest(@Header() xTestHeader: string) {
+    return { header: xTestHeader }
   }
 }

@@ -7,6 +7,6 @@ export enum USER_ROLE {
 }
 
 export type MiddlewareOptions = {
-  [roleSymbol]: USER_ROLE[],
-  [limitSymbol]: { maxCalls: number, perSeconds: number }[]
+  [roleSymbol]: USER_ROLE[][],
+  [limitSymbol]: { maxCalls: number, perSeconds: number }[][]
 }

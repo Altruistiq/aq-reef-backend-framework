@@ -7,6 +7,7 @@ export {
   Query,
   Req,
   Res,
+  createParamDecorator,
 } from './base-param-decorators.class'
 export { Log, Logger } from './log.decorator'
 

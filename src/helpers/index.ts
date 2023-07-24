@@ -1,5 +1,5 @@
 export {BaseController} from './base-controller.class'
-export {ControllerLoaderHelper} from './controller-loader.helper'
+export {Reef} from './reef'
 export {DefaultCasters} from './default-casters.helper'
 
-export {CasterClass, MiddlewareGenericOptions, GenericLogger, IMiddlewareGenerator} from './aq-base.types'
+export {CasterClass, MiddlewareGenericOptions, GenericLogger, IMiddlewareGenerator, EndpointParamMeta} from './aq-base.types'

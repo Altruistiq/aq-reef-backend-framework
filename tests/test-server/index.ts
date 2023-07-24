@@ -2,8 +2,7 @@ import {join} from "path";
 import express, { Express } from 'express'
 import {TestCasters} from "./test-helpers/test-casters.class";
 import {TestErrorHandler} from "./test-helpers/error.handler";
-import {ControllerLoaderHelper} from "./reef/helpers/controller-loader.helper";
-import {GenericLogger} from "./reef/helpers/aq-base.types";
+import {Reef, GenericLogger} from "./reef/helpers";
 import {MiddlewareGenerator} from "./reef-extends/middleware-generator.class";
 
 function getLogger(funcName: string, path?: string): GenericLogger {
@@ -18,7 +17,7 @@ function getLogger(funcName: string, path?: string): GenericLogger {
 export async function initializeServer() {
   const app: Express = express()
 
-  const clh = new ControllerLoaderHelper(app)
+  const clh = new Reef(app)
   await clh
     .addGlobalMiddleware(express.json())
     .addGlobalMiddleware(express.urlencoded({extended: false}))
