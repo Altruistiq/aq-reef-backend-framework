@@ -1,4 +1,4 @@
-import {IMiddlewareGenerator} from "../reef/helpers/aq-base.types";
+import {IMiddlewareGenerator} from "../reef/helpers";
 import {limitSymbol, roleSymbol} from "./reef.symbols";
 import {MiddlewareOptions, USER_ROLE} from "./basic.defs";
 import {RequestHandler, Request, Response, NextFunction} from "express";
@@ -15,7 +15,7 @@ export class MiddlewareGenerator implements IMiddlewareGenerator {
   }
 
   getMiddlewareSymbols(): symbol[] {
-    return [ roleSymbol ];
+    return [ roleSymbol, limitSymbol ]
   }
 
   getRoleMiddleware(roleOptions): RequestHandler[] {
@@ -30,11 +30,9 @@ export class MiddlewareGenerator implements IMiddlewareGenerator {
     return endpointRoles || controllerRoles || []
   }
 
-
   static roleMiddleware(roleOptions: USER_ROLE[], req: Request, res: Response, next: NextFunction) {
     const incomingRole = req.header('x-role') as USER_ROLE | undefined
     if (!roleOptions.includes(incomingRole)) return next(new Error('forbidden'))
     next()
   }
-
 }

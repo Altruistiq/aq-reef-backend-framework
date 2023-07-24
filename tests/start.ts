@@ -15,7 +15,4 @@ before(async () => {
   global._expressApp = await initializeServer()
 })
 
-after(async () => {
-  console.log('Destroying Express app (global post-test hook)')
-})
 
