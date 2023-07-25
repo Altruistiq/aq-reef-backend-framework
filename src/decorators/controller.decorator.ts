@@ -24,11 +24,16 @@ export function Controller(basePath: string, options: IEndpointOptions = {}) {
   }
 }
 
-export function createControllerMiddleware(subject: symbol, params: unknown) {
+export function createControllerMiddleware(subject: symbol, params: unknown, allowMultiple: boolean = false) {
   return function (constructor) {
     const controllerMiddlewareInfo = Reflect.getMetadata(subject, constructor) || {}
-    if (!controllerMiddlewareInfo[middlewareControllerKey]) controllerMiddlewareInfo[middlewareControllerKey] = []
-    controllerMiddlewareInfo[middlewareControllerKey].push(params)
+    if (!controllerMiddlewareInfo[middlewareControllerKey]) controllerMiddlewareInfo[middlewareControllerKey] = { params: [], allowMultiple }
+
+    if (!allowMultiple && controllerMiddlewareInfo[middlewareControllerKey].length > 0) {
+      throw new Error(`You can only use one ${subject.toString()} middleware decorator per controller`)
+    }
+
+    controllerMiddlewareInfo[middlewareControllerKey].params.push(params)
     Reflect.defineMetadata(subject, controllerMiddlewareInfo, constructor)
   }
 }

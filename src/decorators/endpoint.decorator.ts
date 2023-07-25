@@ -3,7 +3,7 @@ import { BaseController } from '../helpers/base-controller.class'
 
 import {EndpointDecorator, EndpointInfo, IEndpointOptions, REST_METHODS} from '../helpers/aq-base.types'
 
-import { endpointMetaSymbol } from './symbols'
+import { endpointMetaSymbol, middlewareDecoratorOptionsSymbol } from './symbols'
 
 /**
  * Decorator for the target endpoint function
@@ -104,11 +104,17 @@ function defineEndpoint<C extends BaseController>(
   }
 }
 
-export function createEndpointMiddleware(subject: symbol, params: unknown) {
+export function createEndpointMiddleware(subject: symbol, params: unknown, allowMultiple: boolean = false) {
   return function (target: BaseController, methodName: string, descriptor: PropertyDescriptor) {
     const controllerMiddlewareInfo = Reflect.getMetadata(subject, target) || {}
-    if (!controllerMiddlewareInfo[methodName]) controllerMiddlewareInfo[methodName] = []
-    controllerMiddlewareInfo[methodName].push(params)
+
+    if (!controllerMiddlewareInfo[methodName]) controllerMiddlewareInfo[methodName] = { params: [], allowMultiple }
+
+    if (!allowMultiple && controllerMiddlewareInfo[methodName].params.length > 0) {
+      throw new Error(`Multiple ${subject.toString()} decorators on the same method is not allowed`)
+    }
+
+    controllerMiddlewareInfo[methodName].params.push(params)
     Reflect.defineMetadata(subject, controllerMiddlewareInfo, target)
   }
 }
