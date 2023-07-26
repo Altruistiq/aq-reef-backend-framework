@@ -193,7 +193,7 @@ export abstract class BaseController {
         funcWrapper[callStackIdPattern] = async function tackerFunc() {
           const funcDef = `${targetClass?.constructor?.name}.${endpointFunc?.name}`
           const logger = getLogger(funcDef, path)
-          const endpointVars = BaseController.getEndpointInputVars(req, res, endpointMeta, casters, logger, funcDef)
+          const endpointVars = await BaseController.getEndpointInputVars(req, res, endpointMeta, casters, logger, funcDef)
           const loggerTitle = `${path} -> ${funcDef}`
           logger.info(`${loggerTitle} endpoint invoked`)
           const response: unknown = endpointFunc(...endpointVars)
@@ -298,14 +298,14 @@ export abstract class BaseController {
    * @return {unknown[]}
    * @private
    */
-  private static getEndpointInputVars(
+  private static async getEndpointInputVars(
     req: Request,
     res: Response,
     endpointParamMeta: EndpointParamMeta[],
     casters: DefaultCasters,
     logger: GenericLogger,
     funcName: string,
-  ): unknown[] {
+  ): Promise<unknown[]> {
     // eslint-disable-next-line no-param-reassign
     if (!endpointParamMeta) endpointParamMeta = []
     const inputVars = Array(endpointParamMeta.length)
@@ -316,7 +316,8 @@ export abstract class BaseController {
         continue;
 
       }
-      inputVars[meta.index] = BaseController.getParamVar(req, res, meta, casters, logger)
+      // TODO: create promise array and Promise.all outside the loop
+      inputVars[meta.index] = await BaseController.getParamVar(req, res, meta, casters, logger)
     }
 
     return inputVars
