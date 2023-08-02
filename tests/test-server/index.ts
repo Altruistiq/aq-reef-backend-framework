@@ -2,8 +2,9 @@ import {join} from "path";
 import express, { Express } from 'express'
 import {TestCasters} from "./test-helpers/test-casters.class";
 import {TestErrorHandler} from "./test-helpers/error.handler";
-import {Reef, GenericLogger} from "./reef/helpers";
+import {Reef, GenericLogger, ControllerBundle} from "./reef/helpers";
 import {MiddlewareGenerator} from "./reef-extends/middleware-generator.class";
+
 
 function getLogger(funcName: string, path?: string): GenericLogger {
   return {
@@ -17,16 +18,23 @@ function getLogger(funcName: string, path?: string): GenericLogger {
 export async function initializeServer() {
   const app: Express = express()
 
+  const v1Bundle: ControllerBundle = {
+    baseRoute: '/api/v1',
+    controllerDirPath: join(__dirname, 'controllers'),
+    controllerFileNamePattern: /^.+\.controller/g,
+    onlyTsFiles: false
+  }
+
   const clh = new Reef(app)
   await clh
-    .addGlobalMiddleware(express.json())
-    .addGlobalMiddleware(express.urlencoded({extended: false}))
-    .setCasters(TestCasters)
-    .setControllerBundle('/api/v1/', join(__dirname, 'controllers'), /^.+\.controller/g, false)
+    .setGlobalMiddleware(express.json())
+    .setGlobalMiddleware(express.urlencoded({extended: false}))
+    .defineParamCaster(TestCasters)
+    .setControllerBundle(v1Bundle)
     .setMiddlewareGenerator(MiddlewareGenerator)
     .addErrorHandler(TestErrorHandler)
     // .setGetTraceIdFunction((res) =>  res.header('x-aws-trace'))
-    .setGetLoggerFn(getLogger)
+    .setLoggerFn(getLogger)
     .launch()
 
   return app

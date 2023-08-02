@@ -112,6 +112,8 @@ export abstract class BaseController {
     const middleware = this.getMiddleware(endpoint.target, methodName)
     middleware.push(endpointFunc)
 
+    console.log('endpointMethod', router[REST_METHODS[endpointMethod]], path, middleware)
+
     router[REST_METHODS[endpointMethod]](path, ...middleware)
 
     return {
@@ -380,7 +382,7 @@ export abstract class BaseController {
       controllerInfo.endpoints.push({
         Method: ep.HTTPMethod,
         Function: ep.methodName,
-        Path: `${this.mainRoutePath}${ep.path}`,
+        Path: `${this.mainRoutePath}${ep.path}`.replaceAll(/\/+/g, '/'),
       })
     }
 

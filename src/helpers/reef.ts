@@ -60,22 +60,17 @@ export class Reef {
    * set the caster functions that will be passed in every controller constructor
    * @param casters
    */
-  setCasters(casters: CasterClass<any>) {
+  defineParamCaster(casters: CasterClass<any>) {
     this.CastersClass = casters
     return this
   }
 
-  setControllerBundle(baseRoute: string, controllerDirPath: string, controllerFileNamePattern?: RegExp, onlyTsFiles?: boolean) {
-    this.controllerBundles.push({
-      baseRoute,
-      controllerDirPath,
-      controllerFileNamePattern,
-      onlyTsFiles: !!onlyTsFiles,
-    })
+  setControllerBundle(bundle: ControllerBundle) {
+    this.controllerBundles.push(bundle)
     return this
   }
 
-  setGetTraceIdFunction(getTraceIdFunction: (req: Request) => string) {
+  setTraceIdFn(getTraceIdFunction: (req: Request) => string) {
     this.getTraceIdFunction = getTraceIdFunction
 
     return this
@@ -100,7 +95,7 @@ export class Reef {
       })
   }
 
-  addGlobalMiddleware(...middleware: RequestHandler[]) {
+  setGlobalMiddleware(...middleware: RequestHandler[]) {
     this.globalMiddleware.push(...middleware)
     return this
   }
@@ -110,8 +105,8 @@ export class Reef {
     return this
   }
 
-  setGetLoggerFn(getLoggerFn: (funcName: string, path?: string) => GenericLogger) {
-    this.getLoggerFn = getLoggerFn
+  setLoggerFn(loggerFn: (funcName: string, path?: string) => GenericLogger) {
+    this.getLoggerFn = loggerFn
     return this
   }
 
