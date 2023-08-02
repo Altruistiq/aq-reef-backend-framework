@@ -4,7 +4,7 @@
   "description": "a typescript web framework based on express.js",
   "scripts": {
     "test": "./scripts/run-tests.sh",
-    "build-package": "npm i && npm run tsc",
+    "build-package": "rm -rf ./pkg && npm i && npm run tsc",
     "tsc": "tsc"
   },
   "repository": {

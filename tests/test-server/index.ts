@@ -8,7 +8,7 @@ import {MiddlewareGenerator} from "./reef-extends/middleware-generator.class";
 function getLogger(funcName: string, path?: string): GenericLogger {
   return {
     info: (...args) => console.info(funcName, path, ...args),
-    log: (...args) => console.info(funcName, path, ...args),
+    debug: (...args) => console.info(funcName, path, ...args),
     warn: (...args) => console.info(funcName, path, ...args),
     error: (...args) => console.info(funcName, path, ...args),
   }

@@ -120,16 +120,33 @@ export function createParamDecorator(actions: IParamDecoratorActions) {
 export function getVariableName(methodName: string, method: (...args) => unknown, index: number): string {
   const methodStr = method.toString()
   const methodSanitized = methodStr.replace(/\n/g, '').replace(/\s+/g, ' ')
-  const varsRegExp = new RegExp(`${methodName}\\((?<names>(([a-zA-Z0-9_]+)+,?\\s*)+)\\)\\s*\\{.+\\}$`, 'g')
-  const regResult = varsRegExp.exec(methodSanitized)
-  if (!regResult) {
-    throw new Error(`cannot find variables for ${methodName}`)
-  }
-  const varNames = regResult.groups.names
-  const variables = varNames.split(',').map((v: string) => v.trim())
-  if (!variables[index]) {
-    throw new Error(`cannot find variable on index ${index} for ${methodName}`)
+
+  let funcDefParams = ''
+  let funcDefParamsStart = false
+  let foundFuncDefEnd = false
+  let charIndex = 0
+  let openParenthesisCount = 0
+
+  while (!(foundFuncDefEnd && funcDefParamsStart)) {
+    const c = methodSanitized.charAt(charIndex++)
+    if (c === '(') {
+      openParenthesisCount++
+      funcDefParamsStart = true
+    } else if (c === ')') {
+      openParenthesisCount--
+    }
+    if (openParenthesisCount === 0 && funcDefParamsStart) foundFuncDefEnd = true
+    if (funcDefParamsStart) funcDefParams += c
   }
 
-  return variables[index]
+  funcDefParams = funcDefParams.substring(1, funcDefParams.length - 1)
+  const paramsArr = funcDefParams.split(',')
+
+  const paramToRetun = paramsArr[index]
+  if (!paramToRetun) throw new Error(`cannot find variable on index ${index} for ${methodName}`)
+
+  if (paramToRetun.includes('=')) {
+    return paramToRetun.split('=')[0].trim()
+  }
+  return paramToRetun.trim()
 }
