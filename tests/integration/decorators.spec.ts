@@ -1,8 +1,8 @@
 import chai, {assert} from "chai";
 describe("Testing Decorators", async () => {
-  it.only('should be able to do a simple GET', async () => {
+  it('should be able to do a simple GET', async () => {
     const testVal = 'simpleGETResponse'
-    const { body, status } = await chai.request(global._expressApp).get(`/api/v1/b121ar?val=${testVal}`).send()
+    const { body, status } = await chai.request(global._expressApp).get(`/api/v1/bar?val=${testVal}`).send()
     assert.equal(status, 200)
     assert.equal(body.val, testVal)
   })
