@@ -1,19 +1,19 @@
 import 'reflect-metadata'
-import express, { Express, Request, Response, Router } from 'express'
+import express, { Express, NextFunction, Request, RequestHandler, Response, Router } from 'express'
 
-import {controllerMetaSymbol, endpointMetaSymbol, paramMetaSymbol} from '../decorators/symbols'
+import { controllerMetaSymbol, endpointMetaSymbol, paramMetaSymbol } from '../decorators/symbols'
 
 import {
   ControllerMeta,
-  CreatedEndpointInfo, EndpointFunc,
+  CreatedEndpointInfo,
+  EndpointFunc,
   EndpointInfo,
-  EndpointParamMeta, ExpressRouteFunc,
+  EndpointParamMeta,
   GenericLogger,
-  IMiddlewareGenerator, REST_METHODS,
+  IMiddlewareGenerator,
+  REST_METHODS,
 } from './aq-base.types'
 import { DefaultCasters } from './default-casters.helper'
-import { getTraceId } from './trace-id.helper'
-import {ApiError, ResError} from "../errors";
 
 /**
  * BaseController is the class that every controller should extend.
@@ -34,8 +34,7 @@ export abstract class BaseController {
     private casters: DefaultCasters,
     private generateTraceId: (req: Request) => string,
     private getLogger: (funcName: string, path?: string) => GenericLogger,
-    private middlewareGenerator: IMiddlewareGenerator | undefined,
-    private hideLogsForErrors: string[]
+    private middlewareGenerator: IMiddlewareGenerator | undefined
   ) {
     this.endpointInfo = Reflect.getMetadata(endpointMetaSymbol, this)
     this.controllerMeta = Reflect.getMetadata(controllerMetaSymbol, this.constructor)
@@ -45,9 +44,7 @@ export abstract class BaseController {
   }
 
   // Dummy function in order to run after the initialization of controller
-  protected afterInit() {
-
-  }
+  protected afterInit() {}
 
   /**
    * Initialization of the creation of the endpoints
@@ -100,7 +97,6 @@ export abstract class BaseController {
     const path = `/${endpointPath}`.replace(/\/+/g, '/')
     const endpointMethod: REST_METHODS = (method || this.getMethod(endpoint.path)).toUpperCase() as REST_METHODS
 
-
     const endpointFunc = this.createEndpointFunc(
       endpoint.descriptor.value.bind(this),
       endpointParamMeta,
@@ -111,8 +107,6 @@ export abstract class BaseController {
 
     const middleware = this.getMiddleware(endpoint.target, methodName)
     middleware.push(endpointFunc)
-
-    console.log('endpointMethod', router[REST_METHODS[endpointMethod]], path, middleware)
 
     router[REST_METHODS[endpointMethod]](path, ...middleware)
 
@@ -134,7 +128,6 @@ export abstract class BaseController {
 
     const symbols = this.middlewareGenerator.getMiddlewareSymbols()
 
-
     for (const mwSymbol of symbols) {
       const meta = Reflect.getMetadata(mwSymbol, target)
 
@@ -152,7 +145,6 @@ export abstract class BaseController {
     const { controllerOptions, endpointOptions } = options
     return this.middlewareGenerator.getMiddleware(controllerOptions, endpointOptions)
   }
-
 
   /**
    * Generates a pseudo-random unique id (based on timestamp and 6 digit random)
@@ -183,34 +175,43 @@ export abstract class BaseController {
     autoResponse: boolean,
     path: string,
     targetClass: any
-  ): ExpressRouteFunc {
+  ): RequestHandler {
     const getLogger = this.getLogger
-    const hideLogsForErrors = this.hideLogsForErrors
     const { casters, generateTraceId } = this
-    return function actualEndpointController(req: Request, res: Response) {
+    return function actualEndpointController(req: Request, res: Response, next: NextFunction) {
       const traceId = generateTraceId ? generateTraceId(req) : BaseController.generateCallStackId()
       try {
         const callStackIdPattern = `__REEF_CALL_STACK_${traceId}__END_OF_REEF__`
         const funcWrapper: { [key: string]: () => Promise<void> } = {}
         funcWrapper[callStackIdPattern] = async function tackerFunc() {
-          const funcDef = `${targetClass?.constructor?.name}.${endpointFunc?.name}`
+          const funcDef = `${targetClass?.constructor?.name}.${endpointFunc?.name?.replace('bound ', '')}`
           const logger = getLogger(funcDef, path)
-          const endpointVars = await BaseController.getEndpointInputVars(req, res, endpointMeta, casters, logger, funcDef)
+          const endpointVars = await BaseController.getEndpointInputVars(
+            req,
+            res,
+            endpointMeta,
+            casters,
+            logger,
+            funcDef
+          )
           const loggerTitle = `${path} -> ${funcDef}`
           logger.info(`${loggerTitle} endpoint invoked`)
-          const response: unknown = endpointFunc(...endpointVars)
-          if (autoResponse) BaseController.handleResponse(response, res, traceId, logger, hideLogsForErrors)
+          const endpointResponse: unknown = endpointFunc(...endpointVars)
+          if (autoResponse) {
+            res.header('x-trace-id', traceId)
+            BaseController.handleResponse(endpointResponse, req, res, next, traceId, logger, loggerTitle)
+          }
         }
         funcWrapper[callStackIdPattern]().catch((err: Error) => {
           const logger = getLogger(endpointFunc.name, path)
-          BaseController.handleResponseError(err, res, logger, hideLogsForErrors)
+          BaseController.handleResponseError(err, req, res, next, logger)
         })
       } catch (e) {
         const logger = getLogger(endpointFunc.name, path)
         let err: Error
         if (!(e instanceof Error)) err = new Error(String(e))
         else err = e
-        BaseController.handleResponseError(err, res, logger, hideLogsForErrors)
+        BaseController.handleResponseError(err, req, res, next, logger)
       }
     }
   }
@@ -218,39 +219,36 @@ export abstract class BaseController {
   /**
    * function that handles a successful response of an endpoint function
    * @param {Promise<unknown> | unknown} payload - the result of the invocation
+   * @param req
    * @param {Response} res - the express Response Object
+   * @param next
    * @param traceId
    * @param {GenericLogger} logger - the logger
-   * @param hideLogsForErrors
    * @param loggerTitle
    * @return {void}
    * @private
    */
   private static handleResponse(
     payload: Promise<unknown> | unknown,
+    req: Request,
     res: Response,
+    next: NextFunction,
     traceId: string,
     logger: GenericLogger,
-    hideLogsForErrors: string[],
     loggerTitle?: string
-  ) {
-    let endpointErr: (Error | undefined)
+  ): void {
+    let endpointErr: Error | undefined
     Promise.resolve(payload)
       .then((data: unknown) => {
         try {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          // eslint-disable-next-line no-param-reassign
-          if (!data.traceId && typeof data === 'object') data.traceId = traceId
-        } finally {
-          res
-            .header('x-trace-id', traceId)
-            .json(data)
+          res.json(data)
+        } catch (err) {
+          BaseController.handleResponseError(err, req, res, next, logger)
         }
       })
       .catch((err: Error) => {
         endpointErr = err
-        BaseController.handleResponseError(err, res, logger, hideLogsForErrors)
+        BaseController.handleResponseError(err, req, res, next, logger)
       })
       .finally(() => {
         if (endpointErr) {
@@ -264,28 +262,25 @@ export abstract class BaseController {
   /**
    * Function that handles the unsuccessful invocation of an endpoint function
    * @param {Error} err - raised the error
+   * @param req
    * @param {Response} res - the express Response Object
+   * @param next
    * @param {GenericLogger} logger - the logger
-   * @param {string[]} hideLogsForErrors - a list of error class names that won't be logged
    * @return {void}
    * @private
    */
-  private static handleResponseError(err: Error, res: Response, logger: GenericLogger, hideLogsForErrors: string[]) {
-    const traceId = getTraceId()
-    if (err instanceof Error && !hideLogsForErrors.includes(err.constructor.name)) logger.error(err.message)
-
-    if (err instanceof ApiError) {
-      res.status(400).json({ error: { message: 'something went wrong' }, traceId })
-
-    } else if (err instanceof ResError) {
-      res.status(400).json({ error: { message: err.message, meta: err.meta }, traceId })
-
-    } else {
-      // eslint-disable-next-line no-param-reassign,@typescript-eslint/restrict-template-expressions
-      if (!(err instanceof Error)) err = new Error(`!Important, thrown non-error item: ${err}`)
-      logger.error(err)
-      res.status(500).json({ error: { message: 'something went wrong' }, traceId })
+  private static handleResponseError(
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    logger: GenericLogger
+  ) {
+    if (!(err instanceof Error)) {
+      logger.error(`!Important, thrown non-error item: ${err}`)
+      err = new Error(err)
     }
+    next(err)
   }
 
   /**
@@ -306,7 +301,7 @@ export abstract class BaseController {
     endpointParamMeta: EndpointParamMeta[],
     casters: DefaultCasters,
     logger: GenericLogger,
-    funcName: string,
+    funcName: string
   ): Promise<unknown[]> {
     // eslint-disable-next-line no-param-reassign
     if (!endpointParamMeta) endpointParamMeta = []
@@ -315,8 +310,7 @@ export abstract class BaseController {
     for (const [index, meta] of endpointParamMeta.entries()) {
       if (!meta) {
         logger.warn(`endpoint function input variable has no decorator on index ${index}`)
-        continue;
-
+        continue
       }
       // TODO: create promise array and Promise.all outside the loop
       inputVars[meta.index] = await BaseController.getParamVar(req, res, meta, casters, logger)
@@ -342,10 +336,6 @@ export abstract class BaseController {
     casters: DefaultCasters,
     logger: GenericLogger
   ) {
-    // if (meta.decorator === 'LOGGER') {
-    //   console.log('returning logger', logger)
-    //   return logger
-    // }
     return meta.actions.getValue(req, res, casters, meta)
   }
 
@@ -386,6 +376,6 @@ export abstract class BaseController {
       })
     }
 
-    logger.info(`Controller: "${controllerName}" Registered`, controllerInfo)
+    // logger.info(`Controller: "${controllerName}" Registered`, controllerInfo)
   }
 }

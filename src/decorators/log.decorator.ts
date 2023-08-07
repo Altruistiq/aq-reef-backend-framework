@@ -48,7 +48,6 @@ export function Logger(): LogParamDecorator {
       const variableName = getVariableName(String(methodName), target[methodName], parameterIndex)
       const funcDef = `${target?.name}.${methodName.toString()}`
 
-      console.log({funcDef})
       const paramMeta: EndpointParamMeta[] =
         Reflect.getMetadata(paramMetaSymbol, target, methodName) || new Array(target[methodName].length)
       paramMeta[parameterIndex] = {
