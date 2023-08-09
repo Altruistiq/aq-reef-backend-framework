@@ -11,12 +11,13 @@ import {Header} from "../reef-extends/param.decorators";
 export default class BarController extends BaseController {
 
   @Get('/')
-  simpleGet(@Query() val: string) {
+  // ?var_name=123
+  simpleGet(@Query('var_name') val: number) {
     return {val}
   }
 
   @Post('/')
-  simplePost(@Body() val: string) {
+  simplePost(@Body('obj.test') val: string) {
     return {val}
   }
 

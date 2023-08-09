@@ -34,7 +34,8 @@ export abstract class BaseController {
     private casters: DefaultCasters,
     private generateTraceId: (req: Request) => string,
     private getLogger: (funcName: string, path?: string) => GenericLogger,
-    private middlewareGenerator: IMiddlewareGenerator | undefined
+    private middlewareGenerator: IMiddlewareGenerator | undefined,
+    private bundleName: string | undefined
   ) {
     this.endpointInfo = Reflect.getMetadata(endpointMetaSymbol, this)
     this.controllerMeta = Reflect.getMetadata(controllerMetaSymbol, this.constructor)
@@ -51,7 +52,7 @@ export abstract class BaseController {
    * @return {void}
    * @private
    */
-  private createEndpoints() {
+  private createEndpoints(): void {
     const router = express.Router()
     const createdEndpoints: CreatedEndpointInfo[] = []
 
@@ -65,7 +66,8 @@ export abstract class BaseController {
           endpoint,
           endpointParamMeta,
           endpoint.methodName,
-          endpoint.method
+          endpoint.method,
+          this.bundleName
         )
       )
     }
@@ -82,6 +84,7 @@ export abstract class BaseController {
    * @param {EndpointParamMeta[]} endpointParamMeta - the metadata that where saved by the parameter decorators
    * @param {string} methodName - the name of the class method
    * @param {REST_METHODS | null} method - the HTTP method
+   * @param bundleName
    * @return { {HTTPMethod: string, path: string, methodName: string} }
    * @private
    */
@@ -91,7 +94,8 @@ export abstract class BaseController {
     endpoint: EndpointInfo,
     endpointParamMeta: EndpointParamMeta[],
     methodName: string,
-    method: REST_METHODS | null
+    method: REST_METHODS | null,
+    bundleName: string | undefined
   ): CreatedEndpointInfo {
     const endpointPath = `${basePath}/${endpoint.path}`
     const path = `/${endpointPath}`.replace(/\/+/g, '/')
@@ -102,7 +106,8 @@ export abstract class BaseController {
       endpointParamMeta,
       endpoint.autoResponse,
       path,
-      endpoint.target
+      endpoint.target,
+      bundleName
     )
 
     const middleware = this.getMiddleware(endpoint.target, methodName)
@@ -166,6 +171,7 @@ export abstract class BaseController {
    * @param {boolean} autoResponse - flag that defines, if after the invocation of the endpointFunc should the return value as the http response
    * @param {string} path -the sub-route of the endpoint
    * @param targetClass
+   * @param bundleName
    * @return {ExpressRouteFunc}
    * @private
    */
@@ -174,7 +180,8 @@ export abstract class BaseController {
     endpointMeta: EndpointParamMeta[],
     autoResponse: boolean,
     path: string,
-    targetClass: any
+    targetClass: any,
+    bundleName: string | undefined
   ): RequestHandler {
     const getLogger = this.getLogger
     const { casters, generateTraceId } = this
@@ -182,6 +189,7 @@ export abstract class BaseController {
       const traceId = generateTraceId ? generateTraceId(req) : BaseController.generateCallStackId()
       try {
         const callStackIdPattern = `__REEF_CALL_STACK_${traceId}__END_OF_REEF__`
+        req.reef = { ...req.reef, traceId, bundleName }
         const funcWrapper: { [key: string]: () => Promise<void> } = {}
         funcWrapper[callStackIdPattern] = async function tackerFunc() {
           const funcDef = `${targetClass?.constructor?.name}.${endpointFunc?.name?.replace('bound ', '')}`
@@ -192,7 +200,6 @@ export abstract class BaseController {
             endpointMeta,
             casters,
             logger,
-            funcDef
           )
           const loggerTitle = `${path} -> ${funcDef}`
           logger.info(`${loggerTitle} endpoint invoked`)
@@ -252,7 +259,13 @@ export abstract class BaseController {
       })
       .finally(() => {
         if (endpointErr) {
-          logger.info(`${loggerTitle} endpoint responded with error.`)
+          logger.info(
+            `${loggerTitle} endpoint threw "${endpointErr.constructor.name}" error. Message "${endpointErr.message}".`,
+            {
+              errorType: endpointErr.constructor.name,
+              error: endpointErr.message,
+            }
+          )
         } else {
           logger.info(`${loggerTitle} endpoint responded.`)
         }
@@ -301,7 +314,6 @@ export abstract class BaseController {
     endpointParamMeta: EndpointParamMeta[],
     casters: DefaultCasters,
     logger: GenericLogger,
-    funcName: string
   ): Promise<unknown[]> {
     // eslint-disable-next-line no-param-reassign
     if (!endpointParamMeta) endpointParamMeta = []
@@ -313,7 +325,7 @@ export abstract class BaseController {
         continue
       }
       // TODO: create promise array and Promise.all outside the loop
-      inputVars[meta.index] = await BaseController.getParamVar(req, res, meta, casters, logger)
+      inputVars[meta.index] = await BaseController.getParamVar(req, res, meta, casters)
     }
 
     return inputVars
@@ -325,17 +337,10 @@ export abstract class BaseController {
    * @param {Response} res - the express Response object
    * @param {EndpointParamMeta} meta - the parameter info of the controller method
    * @param {CasterClass} casters - the Casters
-   * @param logger
    * @return {unknown}
    * @private
    */
-  private static getParamVar(
-    req: Request,
-    res: Response,
-    meta: EndpointParamMeta,
-    casters: DefaultCasters,
-    logger: GenericLogger
-  ) {
+  private static getParamVar(req: Request, res: Response, meta: EndpointParamMeta, casters: DefaultCasters): unknown {
     return meta.actions.getValue(req, res, casters, meta)
   }
 
@@ -376,6 +381,6 @@ export abstract class BaseController {
       })
     }
 
-    // logger.info(`Controller: "${controllerName}" Registered`, controllerInfo)
+    logger.debug(`Controller: "${controllerName}" Registered`)
   }
 }

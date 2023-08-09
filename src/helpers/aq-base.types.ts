@@ -106,6 +106,7 @@ export enum REST_METHODS {
 }
 
 export type ControllerBundle = {
+  name?: string
   baseRoute: string
   controllerDirPath: string
   controllerFileNamePattern?: RegExp

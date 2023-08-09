@@ -30,7 +30,7 @@ export class Reef {
 
   private CastersClass: CasterClass<any> | undefined
 
-  private preRunList: Array<() => void | Promise<void>> = []
+  private preRunList: Array<(...args: any[]) => void | Promise<void>> = []
 
   private controllerBundles: ControllerBundle[] = []
 
@@ -46,7 +46,7 @@ export class Reef {
 
   private hideLogsForErrors: string[] = []
 
-  preRun(funcList: () => void | Promise<void>) {
+  preRun(funcList: (app?: Express) => void | Promise<void>) {
     this.preRunList.push(funcList)
     return this
   }
@@ -80,7 +80,7 @@ export class Reef {
     Error.stackTraceLimit = Infinity
     setLoggerFn(this.getLoggerFn)
     this.globalMiddleware.forEach(m => this.app.use(m))
-    const promises = this.preRunList.map(f => f())
+    const promises = this.preRunList.map(f => f(this.app))
     return Promise.all(promises)
       .then(() => this.controllerBundles
         .reduce( // Chain all te loadController promises
@@ -115,7 +115,7 @@ export class Reef {
    * @param {ControllerBundle} controllerBundle
    */
   private loadControllers(controllerBundle: ControllerBundle) {
-    const {controllerDirPath, controllerFileNamePattern, onlyTsFiles, baseRoute} = controllerBundle
+    const { controllerDirPath, controllerFileNamePattern, onlyTsFiles, baseRoute, name: bundleName } = controllerBundle
     const allowedExtRegexp = onlyTsFiles ? /^.+?(\.ts$)/g : /^.+?(\.ts$)|(\.js$)/g
     const files = readdirSync(controllerDirPath)
     const controllerLoadFns = []
@@ -147,7 +147,7 @@ export class Reef {
             this.getTraceIdFunction,
             this.getLoggerFn,
             this.middlewareGenerator,
-            this.hideLogsForErrors
+            bundleName
           )
         })
       )
