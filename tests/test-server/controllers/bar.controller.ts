@@ -12,7 +12,7 @@ export default class BarController extends BaseController {
 
   @Get('/')
   // ?var_name=123
-  simpleGet(@Query('var_name') val: number) {
+  simpleGet(@Query('var_name') val: string) {
     return {val}
   }
 

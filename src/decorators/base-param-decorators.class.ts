@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import { get } from 'lodash'
 
@@ -14,7 +14,7 @@ export function UnifiedParam(path?: string, autoCast = true) {
       req: Request,
       res: Response,
       casters: DefaultCasters,
-      meta: EndpointParamMeta
+      meta: EndpointParamMeta,
     ): unknown | Promise<unknown> => {
       const data = { ...req.body, ...req.query, ...req.params }
       const rawValue: unknown = get(data, meta.path || meta.name)
@@ -28,7 +28,7 @@ export function Param(path?: string, autoCast = true) {
       req: Request,
       res: Response,
       casters: DefaultCasters,
-      meta: EndpointParamMeta
+      meta: EndpointParamMeta,
     ): unknown | Promise<unknown> => {
       const rawValue: unknown = get(req.params, meta.path || meta.name)
       return casters.cast(meta, rawValue)
@@ -42,7 +42,7 @@ export function Body(path?: string, autoCast = true) {
       req: Request,
       res: Response,
       casters: DefaultCasters,
-      meta: EndpointParamMeta
+      meta: EndpointParamMeta,
     ): unknown | Promise<unknown> => {
       const rawValue: unknown = get(req.body, meta.path || meta.name)
       return casters.cast(meta, rawValue)
@@ -56,14 +56,13 @@ export function Query(path?: string, autoCast = true) {
       req: Request,
       res: Response,
       casters: DefaultCasters,
-      meta: EndpointParamMeta
+      meta: EndpointParamMeta,
     ): unknown | Promise<unknown> => {
       const rawValue: unknown = get(req.query, meta.path || meta.name)
       return casters.cast(meta, rawValue)
     },
   })
 }
-
 export function Res() {
   return createParamDecoratorInternal('', false, {
     getValue: (req: Request, res: Response): unknown | Promise<unknown> => res,
@@ -73,6 +72,18 @@ export function Res() {
 export function Req() {
   return createParamDecoratorInternal('', false, {
     getValue: (req: Request): unknown | Promise<unknown> => req,
+  })
+}
+
+export function Next() {
+  return createParamDecoratorInternal('', false, {
+    getValue: (
+      req: Request,
+      res: Response,
+      casters: DefaultCasters,
+      meta: EndpointParamMeta,
+      next: NextFunction,
+    ): unknown | Promise<unknown> => next,
   })
 }
 

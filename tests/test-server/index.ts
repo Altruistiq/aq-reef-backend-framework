@@ -22,7 +22,6 @@ export async function initializeServer() {
     baseRoute: '/api/v1',
     controllerDirPath: join(__dirname, 'controllers'),
     controllerFileNamePattern: /^.+\.controller/g,
-    onlyTsFiles: false
   }
 
   const clh = new Reef(app)

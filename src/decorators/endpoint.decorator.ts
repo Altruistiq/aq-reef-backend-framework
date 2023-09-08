@@ -1,9 +1,10 @@
 import 'reflect-metadata'
 import { BaseController } from '../helpers/base-controller.class'
 
-import {EndpointDecorator, EndpointInfo, IEndpointOptions, REST_METHODS} from '../helpers/aq-base.types'
+import { EndpointDecorator, EndpointInfo, IEndpointOptions, PreHookFn, REST_METHODS } from '../helpers/aq-base.types'
 
-import { endpointMetaSymbol } from './symbols'
+import { directMiddlewareSymbol, endpointMetaSymbol, preExecutionHookSymbol } from './symbols'
+import { RequestHandler } from 'express'
 
 /**
  * Decorator for the target endpoint function
@@ -75,6 +76,10 @@ export function Delete<C extends BaseController>(
   return defineEndpoint(path, autoResponse, REST_METHODS.DELETE)
 }
 
+export function Middleware(...args: RequestHandler[]) {
+  return createEndpointMiddleware(directMiddlewareSymbol, args)
+}
+
 /**
  * Function that stores the endpoint information in an array format
  * on the controller's class metadata on the "reef:decorators:endpoint" symbol
@@ -85,7 +90,7 @@ export function Delete<C extends BaseController>(
 function defineEndpoint<C extends BaseController>(
   path: string,
   autoResponse = true,
-  method: REST_METHODS | null = null
+  method: REST_METHODS | null = null,
 ): EndpointDecorator<C> {
   return function (target: BaseController, methodName: string, descriptor: PropertyDescriptor) {
     const endpointInfo = Reflect.getMetadata(endpointMetaSymbol, target) || []
@@ -110,5 +115,18 @@ export function createEndpointMiddleware(subject: symbol, params: unknown) {
     if (!controllerMiddlewareInfo[methodName]) controllerMiddlewareInfo[methodName] = []
     controllerMiddlewareInfo[methodName].push(params)
     Reflect.defineMetadata(subject, controllerMiddlewareInfo, target)
+  }
+}
+
+/**
+ * Function that helps to create a decorator that adds a pre-execution hook for an endpoint
+ * @param params
+ * @param preHook
+ */
+export function createEndpointPreExecutionHook(params: unknown, preHook: PreHookFn) {
+  return function (target: BaseController, methodName: string, descriptor: PropertyDescriptor) {
+    const endpointHookInfo = Reflect.getMetadata(preExecutionHookSymbol, target, methodName) || []
+    endpointHookInfo.push({ params, preHook })
+    Reflect.defineMetadata(preExecutionHookSymbol, endpointHookInfo, target, methodName)
   }
 }

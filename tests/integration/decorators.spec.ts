@@ -2,14 +2,14 @@ import chai, {assert} from "chai";
 describe("Testing Decorators", async () => {
   it('should be able to do a simple GET', async () => {
     const testVal = 'simpleGETResponse'
-    const { body, status } = await chai.request(global._expressApp).get(`/api/v1/bar?val=${testVal}`).send()
+    const { body, status } = await chai.request(global._expressApp).get(`/api/v1/bar?var_name=${testVal}`).send()
     assert.equal(status, 200)
     assert.equal(body.val, testVal)
   })
 
   it('should be able to do a simple POST', async () => {
     const testVal = 'simplePOSTResponse'
-    const { body, status } = await chai.request(global._expressApp).post(`/api/v1/bar`).send({ val: testVal })
+    const { body, status } = await chai.request(global._expressApp).post(`/api/v1/bar`).send({ obj: { test: testVal } })
     assert.equal(status, 200)
     assert.equal(body.val, testVal)
   })

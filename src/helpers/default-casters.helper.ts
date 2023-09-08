@@ -8,6 +8,7 @@ export class DefaultCasters {
     // @ts-ignore
     if (!meta.cast || !this[meta.type.name]) return rawValue
     if (rawValue instanceof meta.type) return rawValue
+    if (rawValue === undefined) return undefined
     try {
       // @ts-ignore
       return this[meta.type.name](rawValue)
@@ -25,8 +26,9 @@ export class DefaultCasters {
   }
 
   public Boolean(input: any) {
+    if (typeof input === 'boolean') return input
     if (typeof input !== 'string' && typeof input !== 'number') {
-      throw new Error('cannot_cast')
+      throw new this.ErrorClass('cannot_cast')
     }
     if (['1', 'true', 't'].indexOf(String(input).toLowerCase()) > -1) {
       return true

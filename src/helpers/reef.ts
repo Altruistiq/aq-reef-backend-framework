@@ -1,20 +1,21 @@
-import {readdirSync} from 'fs'
-import {join} from 'path'
+import { readdirSync } from 'fs'
+import { join } from 'path'
 import 'reflect-metadata'
 
-import {Express, RequestHandler, Request} from 'express'
+import { Express, RequestHandler, Request } from 'express'
 
-import {ErrorRequestHandler} from 'express-serve-static-core'
+import { ErrorRequestHandler } from 'express-serve-static-core'
+
+import { setLoggerFn } from '../decorators/log.decorator'
 
 import {
   CasterClass,
   ControllerBundle,
   GenericLogger,
   IMiddlewareGenerator,
-  MiddlewareGeneratorClass
+  MiddlewareGeneratorClass,
 } from './aq-base.types'
-import {DefaultCasters} from "./default-casters.helper";
-import {setLoggerFn} from "../decorators/log.decorator";
+import { DefaultCasters } from './default-casters.helper'
 
 /**
  * Class that find and loads the controllers
@@ -32,6 +33,8 @@ export class Reef {
 
   private preRunList: Array<(...args: any[]) => void | Promise<void>> = []
 
+  private postRunList: Array<(...args: any[]) => void | Promise<void>> = []
+
   private controllerBundles: ControllerBundle[] = []
 
   private globalMiddleware: RequestHandler[] = []
@@ -48,6 +51,11 @@ export class Reef {
 
   preRun(funcList: (app?: Express) => void | Promise<void>) {
     this.preRunList.push(funcList)
+    return this
+  }
+
+  postRun(funcList: (app?: Express) => void | Promise<void>) {
+    this.postRunList.push(funcList)
     return this
   }
 
@@ -82,14 +90,18 @@ export class Reef {
     this.globalMiddleware.forEach(m => this.app.use(m))
     const promises = this.preRunList.map(f => f(this.app))
     return Promise.all(promises)
-      .then(() => this.controllerBundles
-        .reduce( // Chain all te loadController promises
+      .then(() =>
+        this.controllerBundles.reduce(
+          // Chain all te loadController promises
           (accPromise, controllerBundle) => {
             return accPromise.then(() => this.loadControllers(controllerBundle))
           },
-          Promise.resolve()
-        )
+          Promise.resolve(),
+        ),
       )
+      .then(() => {
+        return Promise.all(this.postRunList.map(f => f(this.app)))
+      })
       .then(() => {
         if (this.errorHandlerFn) this.app.use(this.errorHandlerFn)
       })
@@ -115,8 +127,8 @@ export class Reef {
    * @param {ControllerBundle} controllerBundle
    */
   private loadControllers(controllerBundle: ControllerBundle) {
-    const { controllerDirPath, controllerFileNamePattern, onlyTsFiles, baseRoute, name: bundleName } = controllerBundle
-    const allowedExtRegexp = onlyTsFiles ? /^.+?(\.ts$)/g : /^.+?(\.ts$)|(\.js$)/g
+    const { controllerDirPath, controllerFileNamePattern, baseRoute, name: bundleName } = controllerBundle
+    const allowedExtRegexp = /^.+?(\.ts$)|(\.js$)/g
     const files = readdirSync(controllerDirPath)
     const controllerLoadFns = []
 
@@ -125,16 +137,12 @@ export class Reef {
       if (controllerFileNamePattern && controllerFileNamePattern.lastIndex) controllerFileNamePattern.lastIndex = 0
       allowedExtRegexp.lastIndex = 0
 
-
       const allowExt = allowedExtRegexp.test(filename)
       if (!allowExt) continue
 
-
       if (controllerFileNamePattern && !controllerFileNamePattern.test(filename)) continue
 
-
       const filepath = join(controllerDirPath, filename)
-
 
       controllerLoadFns.push(() =>
         import(filepath).then(importPayload => {
@@ -147,12 +155,15 @@ export class Reef {
             this.getTraceIdFunction,
             this.getLoggerFn,
             this.middlewareGenerator,
-            bundleName
+            bundleName,
           )
-        })
+        }),
       )
     }
 
-    return controllerLoadFns.reduce((accPromise, currPromise) => accPromise.then(currPromise), Promise.resolve()) as Promise<void>
+    return controllerLoadFns.reduce(
+      (accPromise, currPromise) => accPromise.then(currPromise),
+      Promise.resolve(),
+    ) as Promise<void>
   }
 }

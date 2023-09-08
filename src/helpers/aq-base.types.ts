@@ -1,4 +1,4 @@
-import { RequestHandler, Request, Response } from 'express'
+import { RequestHandler, Request, Response, NextFunction } from 'express'
 
 import { DefaultCasters } from './default-casters.helper'
 
@@ -82,7 +82,13 @@ export interface GenericLogger {
 }
 
 export interface IParamDecoratorActions {
-  getValue(req: Request, res: Response, casters: DefaultCasters, meta: EndpointParamMeta): unknown | Promise<unknown>
+  getValue(
+    req: Request,
+    res: Response,
+    casters: DefaultCasters,
+    meta: EndpointParamMeta,
+    next: NextFunction,
+  ): unknown | Promise<unknown>
   preEndpoint?(
     req: Request,
     res: Response,
@@ -110,5 +116,17 @@ export type ControllerBundle = {
   baseRoute: string
   controllerDirPath: string
   controllerFileNamePattern?: RegExp
-  onlyTsFiles: boolean
+}
+
+export type PreHookFn = (
+  params: unknown,
+  endpointVariables: unknown[],
+  req: Request,
+  res: Response,
+  paramMeta: EndpointParamMeta[],
+) => Promise<void>
+
+export type EndpointHook = {
+  params: unknown
+  preHook: PreHookFn
 }
