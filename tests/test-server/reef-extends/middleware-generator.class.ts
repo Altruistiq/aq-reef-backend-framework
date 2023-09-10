@@ -1,4 +1,4 @@
-import {IMiddlewareGenerator} from "../reef/helpers";
+import {IMiddlewareGenerator} from "../reef/helpers/aq-base.types";
 import {limitSymbol, roleSymbol} from "./reef.symbols";
 import {MiddlewareOptions, USER_ROLE} from "./basic.defs";
 import {RequestHandler, Request, Response, NextFunction} from "express";

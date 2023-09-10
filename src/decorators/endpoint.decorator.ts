@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { BaseController } from '../helpers/base-controller.class'
 
-import { EndpointDecorator, EndpointInfo, IEndpointOptions, PreHookFn, REST_METHODS } from '../helpers/aq-base.types'
+import { EndpointDecorator, EndpointInfo, PreHookFn, REST_METHODS } from '../helpers/aq-base.types'
 
 import { directMiddlewareSymbol, endpointMetaSymbol, preExecutionHookSymbol } from './symbols'
 import { RequestHandler } from 'express'

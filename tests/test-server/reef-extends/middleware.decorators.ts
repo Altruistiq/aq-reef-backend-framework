@@ -1,5 +1,6 @@
+import { createControllerMiddleware } from "../reef/decorators/controller.decorator";
+import { createEndpointMiddleware } from "../reef/decorators/endpoint.decorator";
 import { USER_ROLE } from "./basic.defs";
-import { createControllerMiddleware, createEndpointMiddleware } from "../reef/decorators";
 import {roleSymbol} from "./reef.symbols";
 
 export function CAuthRoles(...roles: USER_ROLE[]) {

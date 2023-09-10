@@ -1,9 +1,10 @@
 import {join} from "path";
-import express, { Express } from 'express'
+import express, {Express} from 'express'
 import {TestCasters} from "./test-helpers/test-casters.class";
 import {TestErrorHandler} from "./test-helpers/error.handler";
-import {Reef, GenericLogger, ControllerBundle} from "./reef/helpers";
 import {MiddlewareGenerator} from "./reef-extends/middleware-generator.class";
+import {ControllerBundle, GenericLogger} from './reef/helpers/aq-base.types';
+import { Reef } from "./reef/helpers/reef";
 
 
 function getLogger(funcName: string, path?: string): GenericLogger {
@@ -15,7 +16,7 @@ function getLogger(funcName: string, path?: string): GenericLogger {
   }
 }
 
-export async function initializeServer() {
+export async function initializeServer(bindToPort?: boolean) {
   const app: Express = express()
 
   const v1Bundle: ControllerBundle = {
@@ -36,7 +37,10 @@ export async function initializeServer() {
     .setLoggerFn(getLogger)
     .launch()
 
-  return app
+  if (bindToPort) {
+    app.listen(1082, () => {})
+  }
+    return app
 }
 
 process

@@ -4,10 +4,14 @@
   "description": "",
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "start": "ts-node start.ts"
+  },
   "dependencies": {
     "@types/express": "^4.17.17",
     "@types/lodash": "^4.14.195",
     "@types/node": "^20.4.2",
+    "bun": "^1.0.0",
     "express": "^4.18.2",
     "lodash": "^4.17.21",
     "ts-node": "^10.9.1",

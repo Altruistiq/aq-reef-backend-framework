@@ -2,9 +2,7 @@ import { readdirSync } from 'fs'
 import { join } from 'path'
 import 'reflect-metadata'
 
-import { Express, RequestHandler, Request } from 'express'
-
-import { ErrorRequestHandler } from 'express-serve-static-core'
+import { Express, RequestHandler, Request, ErrorRequestHandler } from 'express'
 
 import { setLoggerFn } from '../decorators/log.decorator'
 

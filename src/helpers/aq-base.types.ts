@@ -35,7 +35,7 @@ export type EndpointParamMeta = {
   isRequired?: boolean
   name: string
   path: string | undefined
-  type: typeof Object
+  type: unknown | undefined
 }
 
 export type EndpointInfo = {

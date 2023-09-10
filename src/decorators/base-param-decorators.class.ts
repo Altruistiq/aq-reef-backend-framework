@@ -4,9 +4,9 @@ import { get } from 'lodash'
 
 import { EndpointParamMeta, IParamDecoratorActions, ParamDecorator } from '../helpers/aq-base.types'
 
-import { DefaultCasters } from '../helpers'
-
-import { paramMetaSymbol } from './symbols'
+import {castDecoratorSymbol, paramMetaSymbol} from './symbols'
+import {DefaultCasters} from "../helpers/default-casters.helper";
+import {BaseController} from "../helpers/base-controller.class";
 
 export function UnifiedParam(path?: string, autoCast = true) {
   return createParamDecoratorInternal(path, autoCast, {
@@ -93,17 +93,10 @@ function createParamDecoratorInternal(
   actions: IParamDecoratorActions,
 ): ParamDecorator {
   return function (target: any, methodName: string, parameterIndex: number) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const propertyTypes: unknown[] = Reflect.getMetadata('design:paramtypes', target, methodName)
-    if (!propertyTypes[parameterIndex]) return
-
-    const propertyType = propertyTypes[parameterIndex] as typeof Object
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const propertyType = getParamMetaByIndex(target, methodName, parameterIndex)
     const variableName = getVariableName(methodName, target[methodName], parameterIndex)
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const paramMeta: EndpointParamMeta[] =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       Reflect.getMetadata(paramMetaSymbol, target, methodName) || new Array(target[methodName].length)
     paramMeta[parameterIndex] = {
       ...paramMeta[parameterIndex],
@@ -116,6 +109,18 @@ function createParamDecoratorInternal(
     }
     Reflect.defineMetadata(paramMetaSymbol, paramMeta, target, methodName)
   }
+}
+
+function getParamMetaByIndex(target: typeof BaseController, methodName: string, parameterIndex: number): unknown | undefined {
+  const propertyTypes: unknown[] =
+    // If we are on tsc/node we get the parameter type from the design:paramtypes
+    Reflect.getMetadata('design:paramtypes', target, methodName)
+    // In any other case we get the type from custom metadata set by the @Cast decorator -- e.g. bun.sh does not implement design:paramtypes metadata
+  || Reflect.getMetadata(castDecoratorSymbol, target, methodName)
+
+  return propertyTypes && propertyTypes[parameterIndex]
+
+
 }
 
 export function createParamDecorator(actions: IParamDecoratorActions) {

@@ -1,0 +1,3 @@
+preload = ["./reef/plugins/reef-casters.bun-plugin.ts"]
+
+logLevel = "debug"
