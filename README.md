@@ -34,9 +34,9 @@ const reef = new Reef(app)
 
 ### Create a controller bundle
 
-In the controller bundle you set the base url path, the path of the controller files, a regex to match the filename (
+In the controller bundle you set the base url path, the path of the controller absolutePathFiles, a regex to match the filename (
 optional)
-and a boolean that sets if the framework will search only for ts file or for either ts and js files
+and a boolean that sets if the framework will search only for ts file or for either ts and js absolutePathFiles
 
 ```typescript
   reef.setControllerBundle('/api/v1/', join(__dirname, 'controllers'), /^.+\.controller/g, true)

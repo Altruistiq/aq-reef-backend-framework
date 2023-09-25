@@ -1,8 +1,6 @@
 import 'reflect-metadata'
 
-import { IEndpointOptions } from '../helpers/aq-base.types'
-
-import {controllerMetaSymbol, middlewareControllerKey} from './symbols'
+import { controllerMetaSymbol, middlewareControllerKey } from './symbols'
 
 /**
  * Controller decorator function.

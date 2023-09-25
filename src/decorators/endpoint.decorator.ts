@@ -1,10 +1,11 @@
 import 'reflect-metadata'
+import { RequestHandler } from 'express'
+
 import { BaseController } from '../helpers/base-controller.class'
 
-import { EndpointDecorator, EndpointInfo, IEndpointOptions, PreHookFn, REST_METHODS } from '../helpers/aq-base.types'
+import { EndpointDecorator, EndpointInfo, PreHookFn, REST_METHODS } from '../helpers/aq-base.types'
 
 import { directMiddlewareSymbol, endpointMetaSymbol, preExecutionHookSymbol } from './symbols'
-import { RequestHandler } from 'express'
 
 /**
  * Decorator for the target endpoint function
@@ -21,10 +22,7 @@ export function Endpoint(path: string, autoResponse = true) {
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Get<C extends BaseController>(
-  path: string,
-  autoResponse = true
-): EndpointDecorator<C> {
+export function Get<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
   return defineEndpoint(path, autoResponse, REST_METHODS.GET)
 }
 
@@ -33,10 +31,7 @@ export function Get<C extends BaseController>(
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Post<C extends BaseController>(
-  path: string,
-  autoResponse = true
-): EndpointDecorator<C> {
+export function Post<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
   return defineEndpoint(path, autoResponse, REST_METHODS.POST)
 }
 
@@ -45,10 +40,7 @@ export function Post<C extends BaseController>(
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Put<C extends BaseController>(
-  path: string,
-  autoResponse = true
-): EndpointDecorator<C> {
+export function Put<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
   return defineEndpoint(path, autoResponse, REST_METHODS.PUT)
 }
 
@@ -57,10 +49,7 @@ export function Put<C extends BaseController>(
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Patch<C extends BaseController>(
-  path: string,
-  autoResponse = true
-): EndpointDecorator<C> {
+export function Patch<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
   return defineEndpoint(path, autoResponse, REST_METHODS.PATCH)
 }
 
@@ -69,10 +58,7 @@ export function Patch<C extends BaseController>(
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Delete<C extends BaseController>(
-  path: string,
-  autoResponse = true
-): EndpointDecorator<C> {
+export function Delete<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
   return defineEndpoint(path, autoResponse, REST_METHODS.DELETE)
 }
 
@@ -110,7 +96,7 @@ function defineEndpoint<C extends BaseController>(
 }
 
 export function createEndpointMiddleware(subject: symbol, params: unknown) {
-  return function (target: BaseController, methodName: string, descriptor: PropertyDescriptor) {
+  return function (target: BaseController, methodName: string) {
     const controllerMiddlewareInfo = Reflect.getMetadata(subject, target) || {}
     if (!controllerMiddlewareInfo[methodName]) controllerMiddlewareInfo[methodName] = []
     controllerMiddlewareInfo[methodName].push(params)
@@ -124,7 +110,7 @@ export function createEndpointMiddleware(subject: symbol, params: unknown) {
  * @param preHook
  */
 export function createEndpointPreExecutionHook(params: unknown, preHook: PreHookFn) {
-  return function (target: BaseController, methodName: string, descriptor: PropertyDescriptor) {
+  return function (target: BaseController, methodName: string) {
     const endpointHookInfo = Reflect.getMetadata(preExecutionHookSymbol, target, methodName) || []
     endpointHookInfo.push({ params, preHook })
     Reflect.defineMetadata(preExecutionHookSymbol, endpointHookInfo, target, methodName)

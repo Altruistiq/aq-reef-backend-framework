@@ -1,5 +1,6 @@
-import { AnyError, EndpointParamMeta } from './aq-base.types'
 import { ResError } from '../errors'
+
+import { AnyError, EndpointParamMeta } from './aq-base.types'
 
 export class DefaultCasters {
   protected ErrorClass: AnyError<Error> = Error

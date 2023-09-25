@@ -1,4 +1,4 @@
-import { readdirSync } from 'fs'
+import {readdirSync, statSync} from 'fs'
 import { join } from 'path'
 import 'reflect-metadata'
 
@@ -129,23 +129,23 @@ export class Reef {
   private loadControllers(controllerBundle: ControllerBundle) {
     const { controllerDirPath, controllerFileNamePattern, baseRoute, name: bundleName } = controllerBundle
     const allowedExtRegexp = /^.+?(\.ts$)|(\.js$)/g
-    const files = readdirSync(controllerDirPath)
+    const absolutePathFiles = this.getFilesRecursively(controllerDirPath)
+    console.log({ absolutePathFiles })
+
     const controllerLoadFns = []
 
-    for (const filename of files) {
+    for (const file of absolutePathFiles) {
       // eslint-disable-next-line no-param-reassign
       if (controllerFileNamePattern && controllerFileNamePattern.lastIndex) controllerFileNamePattern.lastIndex = 0
       allowedExtRegexp.lastIndex = 0
 
-      const allowExt = allowedExtRegexp.test(filename)
+      const allowExt = allowedExtRegexp.test(file)
       if (!allowExt) continue
 
-      if (controllerFileNamePattern && !controllerFileNamePattern.test(filename)) continue
-
-      const filepath = join(controllerDirPath, filename)
+      if (controllerFileNamePattern && !controllerFileNamePattern.test(file)) continue
 
       controllerLoadFns.push(() =>
-        import(filepath).then(importPayload => {
+        import(file).then(importPayload => {
           const Controller = importPayload.default
           // eslint-disable-next-line no-new
           new Controller(
@@ -166,4 +166,18 @@ export class Reef {
       Promise.resolve(),
     ) as Promise<void>
   }
+  private getFilesRecursively(directory: string, files: string[] = []) {
+    const filesInDirectory = readdirSync(directory, { encoding: 'utf8' })
+    for (const file of filesInDirectory) {
+      const absolute = join(directory, file)
+      if (statSync(absolute).isDirectory()) {
+        this.getFilesRecursively(absolute, files)
+      } else {
+        files.push(absolute)
+      }
+    }
+
+    return files
+  }
+
 }

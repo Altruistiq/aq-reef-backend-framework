@@ -144,6 +144,13 @@ describe("Testing Decorators", async () => {
       .set('x-test-header', 'gotcha')
       .send()
     assert.equal(body.header, 'gotcha')
+  })
 
+  it('should be able load controller files recursively in all directories', async () => {
+    const { body } = await chai
+      .request(global._expressApp)
+      .get(`/api/v1/recursive`)
+      .send()
+    assert.equal(body.success, true)
   })
 })

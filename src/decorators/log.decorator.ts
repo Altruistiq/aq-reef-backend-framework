@@ -1,8 +1,9 @@
 import 'reflect-metadata'
 import { BaseController } from '../helpers/base-controller.class'
 import { AnyFunction, EndpointParamMeta, LogParamDecorator } from '../helpers/aq-base.types'
+
 import { loggerMetadataKeySymbol, paramMetaSymbol } from './symbols'
-import { getVariableName } from "./base-param-decorators.class";
+import { getVariableName } from './base-param-decorators.class'
 
 let getLogger
 export function setLoggerFn(getLoggerFn) {
@@ -46,7 +47,6 @@ export function Logger(): LogParamDecorator {
     // If the logger decorator is used in controller
     if (Object.getPrototypeOf(target.constructor) === BaseController) {
       const variableName = getVariableName(String(methodName), target[methodName], parameterIndex)
-      const funcDef = `${target?.name}.${methodName.toString()}`
 
       const paramMeta: EndpointParamMeta[] =
         Reflect.getMetadata(paramMetaSymbol, target, methodName) || new Array(target[methodName].length)
@@ -57,7 +57,7 @@ export function Logger(): LogParamDecorator {
         name: variableName,
         path: null,
         cast: false,
-        actions: { getValue: () => getLogger('MY LOGGER') }
+        actions: { getValue: () => getLogger('MY LOGGER') },
       }
       Reflect.defineMetadata(paramMetaSymbol, paramMeta, target, methodName)
     } else {

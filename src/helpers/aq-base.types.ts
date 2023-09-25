@@ -61,14 +61,10 @@ export type ControllerMeta = {
 export type EndpointDecorator<C extends BaseController> = (
   target: C,
   methodName: string,
-  descriptor: PropertyDescriptor
+  descriptor: PropertyDescriptor,
 ) => void
 
-export type ParamDecorator = (
-  target: any,
-  methodName: string | symbol,
-  parameterIndex: number
-) => void
+export type ParamDecorator = (target: any, methodName: string | symbol, parameterIndex: number) => void
 
 export interface IEndpointOptions {
   [key: string]: unknown
@@ -93,13 +89,13 @@ export interface IParamDecoratorActions {
     req: Request,
     res: Response,
     casters: DefaultCasters,
-    meta: EndpointParamMeta
+    meta: EndpointParamMeta,
   ): unknown | Promise<unknown>
   postEndpoint?(
     req: Request,
     res: Response,
     casters: DefaultCasters,
-    meta: EndpointParamMeta
+    meta: EndpointParamMeta,
   ): unknown | Promise<unknown>
 }
 
