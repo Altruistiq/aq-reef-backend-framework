@@ -1,5 +1,5 @@
 import { AnyError, EndpointParamMeta } from './aq-base.types'
-import { ResError } from '../errors/res.error'
+import { ResError } from '../errors'
 
 export class DefaultCasters {
   protected ErrorClass: AnyError<Error> = Error
@@ -7,12 +7,13 @@ export class DefaultCasters {
   public cast(meta: EndpointParamMeta, rawValue: unknown): unknown {
     // @ts-ignore
     if (!meta.cast || !this[meta.type?.name]) return rawValue
-    if (rawValue instanceof meta.type) return rawValue
+    if (rawValue instanceof (meta.type as typeof Object)) return rawValue
     if (rawValue === undefined) return undefined
     try {
       // @ts-ignore
       return this[meta.type.name](rawValue)
     } catch (err) {
+      // @ts-ignore
       throw new ResError(`invalid_param_type`, { param: meta.name, type: meta.type.name })
     }
   }
