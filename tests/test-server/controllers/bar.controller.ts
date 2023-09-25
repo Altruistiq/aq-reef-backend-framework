@@ -3,11 +3,8 @@ import {FooService} from "../test-helpers/foo.service";
 import {AuthRoles} from "../reef-extends/middleware.decorators";
 import {USER_ROLE} from "../reef-extends/basic.defs";
 import {Header} from "../reef-extends/param.decorators";
-import { BaseController } from "../reef/helpers/base-controller.class";
-import { Controller } from "../reef/decorators/controller.decorator";
-import {Delete, Get, Patch, Post, Put} from "../reef/decorators/endpoint.decorator";
-import {Body, Param, Query, Req, Res} from "../reef/decorators/base-param-decorators.class";
-
+import { BaseController } from "../reef/helpers";
+import { Controller, Delete, Get, Patch, Post, Put, Body, Param, Query, Req, Res } from "../reef/decorators";
 
 @Controller('bar')
 export default class BarController extends BaseController {

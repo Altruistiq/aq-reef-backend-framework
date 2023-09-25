@@ -3,8 +3,8 @@ import express, {Express} from 'express'
 import {TestCasters} from "./test-helpers/test-casters.class";
 import {TestErrorHandler} from "./test-helpers/error.handler";
 import {MiddlewareGenerator} from "./reef-extends/middleware-generator.class";
-import {ControllerBundle, GenericLogger} from './reef/helpers/aq-base.types';
-import { Reef } from "./reef/helpers/reef";
+import {ControllerBundle, GenericLogger, Reef} from './reef/helpers';
+
 
 
 function getLogger(funcName: string, path?: string): GenericLogger {

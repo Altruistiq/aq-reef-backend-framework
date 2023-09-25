@@ -1,8 +1,7 @@
-import {BaseController} from "../reef/helpers/base-controller.class";
+import {BaseController} from "../reef/helpers";
 import {AuthRoles, CAuthRoles} from "../reef-extends/middleware.decorators";
 import {USER_ROLE} from "../reef-extends/basic.defs";
-import { Controller } from "../reef/decorators/controller.decorator";
-import { Get } from "../reef/decorators/endpoint.decorator";
+import { Get, Controller } from "../reef/decorators";
 
 
 @CAuthRoles(USER_ROLE.USER, USER_ROLE.ADMIN)

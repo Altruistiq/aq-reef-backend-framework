@@ -1,11 +1,11 @@
 import { BunPlugin, plugin } from "bun";
-import * as fs from "fs/promises";
 
 const reefCasters: BunPlugin = {
   name: "reef-casters",
   async setup(build) {
     build.onLoad({ filter: /\.(ts)$/ }, async (args) => {
-      let contents = await fs.readFile(args.path, "utf8");
+      const file = Bun.file(args.path)
+      const contents = await file.read()
       const trs = new Bun.Transpiler({ loader: 'ts' })
       const imports = trs.scanImports(contents)
       const bpdImport = imports.find(i => i.kind === 'import-statement' && /base-param-decorators\.class$/g.test(i.path))
