@@ -157,11 +157,13 @@ export abstract class BaseController {
 
       if (endpointsMeta && endpointsMeta[methodName]) {
         if (!options.endpointOptions) options.endpointOptions = { [middlewareSymbol]: [] }
+        if (!options.endpointOptions[middlewareSymbol]) options.endpointOptions[middlewareSymbol] = []
         options.endpointOptions[middlewareSymbol].push(...endpointsMeta[methodName])
       }
 
       if (classMeta && classMeta[middlewareControllerKey]) {
         if (!options.controllerOptions) options.controllerOptions = { [middlewareSymbol]: [] }
+        if (!options.controllerOptions[middlewareSymbol]) options.controllerOptions[middlewareSymbol] = []
         options.controllerOptions[middlewareSymbol].push(...classMeta[middlewareControllerKey])
       }
     }

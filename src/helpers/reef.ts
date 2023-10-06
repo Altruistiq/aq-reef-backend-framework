@@ -1,4 +1,4 @@
-import {readdirSync, statSync} from 'fs'
+import { readdirSync, statSync } from 'fs'
 import { join } from 'path'
 import 'reflect-metadata'
 
@@ -130,7 +130,6 @@ export class Reef {
     const { controllerDirPath, controllerFileNamePattern, baseRoute, name: bundleName } = controllerBundle
     const allowedExtRegexp = /^.+?(\.ts$)|(\.js$)/g
     const absolutePathFiles = this.getFilesRecursively(controllerDirPath)
-    console.log({ absolutePathFiles })
 
     const controllerLoadFns = []
 
@@ -145,19 +144,24 @@ export class Reef {
       if (controllerFileNamePattern && !controllerFileNamePattern.test(file)) continue
 
       controllerLoadFns.push(() =>
-        import(file).then(importPayload => {
-          const Controller = importPayload.default
-          // eslint-disable-next-line no-new
-          new Controller(
-            this.app,
-            baseRoute,
-            this.CastersClass ? new this.CastersClass() : new DefaultCasters(),
-            this.getTraceIdFunction,
-            this.getLoggerFn,
-            this.middlewareGenerator,
-            bundleName,
-          )
-        }),
+        import(file)
+          .then(importPayload => {
+            const Controller = importPayload.default
+            // eslint-disable-next-line no-new
+            new Controller(
+              this.app,
+              baseRoute,
+              this.CastersClass ? new this.CastersClass() : new DefaultCasters(),
+              this.getTraceIdFunction,
+              this.getLoggerFn,
+              this.middlewareGenerator,
+              bundleName,
+            )
+          })
+          .catch(err => {
+            console.error('cannot load controller file: ', file, err)
+            throw err
+          }),
       )
     }
 
@@ -166,6 +170,7 @@ export class Reef {
       Promise.resolve(),
     ) as Promise<void>
   }
+
   private getFilesRecursively(directory: string, files: string[] = []) {
     const filesInDirectory = readdirSync(directory, { encoding: 'utf8' })
     for (const file of filesInDirectory) {
@@ -179,5 +184,4 @@ export class Reef {
 
     return files
   }
-
 }
