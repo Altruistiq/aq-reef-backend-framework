@@ -1,5 +1,5 @@
 {
-  "name": "reef",
+  "name": "reef-ts",
   "version": "1.0.1",
   "description": "a typescript web framework",
   "main": "/pkg",
@@ -10,7 +10,7 @@
     "tsc": "tsc",
     "lint": "biome check --apply-unsafe ./src",
     "format": "biome format --write ./src",
-    "release": "changeset publish"
+    "release": "cp -f README.md ./pkg && changeset publish"
   },
   "repository": {
     "type": "git",
