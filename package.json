@@ -1,9 +1,11 @@
 {
   "name": "reef-ts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "a typescript web framework",
   "main": "/pkg",
-  "files": ["pkg"],
+  "files": [
+    "pkg"
+  ],
   "scripts": {
     "test": "./scripts/run-tests.sh",
     "test-watch": "./scripts/run-tests.sh watch",
