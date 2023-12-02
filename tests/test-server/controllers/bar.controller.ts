@@ -56,7 +56,6 @@ export default class BarController extends BaseController {
   @Get('read-req-header')
   headerTest(@Req() req: Request, @Query() headerName: string) {
     FooService.foo()
-
     return { [headerName]: req.header(headerName) }
   }
 
