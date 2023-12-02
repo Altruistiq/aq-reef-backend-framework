@@ -8,16 +8,16 @@ import { controllerMetaSymbol, middlewareControllerKey } from './symbols';
  * @param {string} basePath
  */
 export function Controller(basePath: string) {
-	return function (constr: any) {
+	return function (targetClass: any, _unused?: any) {
 		let controllerMeta =
-			Reflect.getMetadata(controllerMetaSymbol, constr) || {};
+			Reflect.getMetadata(controllerMetaSymbol, targetClass) || {};
 
 		controllerMeta = {
 			...controllerMeta,
 			basePath,
 		};
 
-		Reflect.defineMetadata(controllerMetaSymbol, controllerMeta, constr);
+		Reflect.defineMetadata(controllerMetaSymbol, controllerMeta, targetClass);
 	};
 }
 
