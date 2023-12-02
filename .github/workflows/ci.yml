@@ -16,5 +16,6 @@ jobs:
         with:
           node-version: 18.x
 
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run tsc -- --noEmit
       - run: pnpm run test

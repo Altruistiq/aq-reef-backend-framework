@@ -2,12 +2,15 @@
   "name": "reef",
   "version": "1.0.1",
   "description": "a typescript web framework",
+  "main": "/pkg",
+  "files": ["pkg"],
   "scripts": {
     "test": "./scripts/run-tests.sh",
     "test-watch": "./scripts/run-tests.sh watch",
-    "tsc": "tsc --noEmit",
+    "tsc": "tsc",
     "lint": "biome check --apply-unsafe ./src",
-    "format": "biome format --write ./src"
+    "format": "biome format --write ./src",
+    "release": "changeset publish"
   },
   "repository": {
     "type": "git",
