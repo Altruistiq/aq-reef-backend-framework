@@ -4,7 +4,9 @@
   "description": "a typescript web framework",
   "main": "/pkg/index",
   "source": "/pkg/index",
-  "publishConfig": {},
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "./pkg",
     "README.md"
@@ -41,13 +43,13 @@
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.4.0",
     "mocha": "^10.2.0",
-    "reflect-metadata": "^0.1.13",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
     "release-it": "^17.0.0"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "reflect-metadata": "^0.1.13"
   }
 }
