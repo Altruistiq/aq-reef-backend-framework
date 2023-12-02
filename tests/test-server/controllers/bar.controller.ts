@@ -5,7 +5,6 @@ import {AuthRoles} from "../reef-extends/middleware.decorators";
 import {USER_ROLE} from "../reef-extends/basic.defs";
 import {Header} from "../reef-extends/param.decorators";
 
-
 @Controller('bar')
 export default class BarController extends BaseController {
 
@@ -46,7 +45,7 @@ export default class BarController extends BaseController {
   }
 
   @Get('caster-test')
-  castersTest(
+  casterTest(
     @Query() myDate: Date,
     @Query() age: number,
     @Query() isBool: boolean
