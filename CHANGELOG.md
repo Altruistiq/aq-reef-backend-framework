@@ -1,5 +1,11 @@
 # reef
 
+## 1.0.6
+
+### Patch Changes
+
+- test fixes
+
 ## 1.0.5
 
 ### Patch Changes

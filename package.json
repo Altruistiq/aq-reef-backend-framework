@@ -1,6 +1,6 @@
 {
   "name": "reef-ts",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "a typescript web framework",
   "main": "/pkg",
   "publishConfig": {},
