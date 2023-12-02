@@ -1,5 +1,5 @@
 {
-  "name": "@aq/reef",
+  "name": "reef-framework",
   "version": "0.0.1-development",
   "description": "a typescript web framework",
   "main": "/pkg/index",
