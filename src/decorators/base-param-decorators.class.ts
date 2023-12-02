@@ -1,16 +1,16 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from 'express';
 
-import { get } from "lodash";
+import { get } from 'lodash';
 
 import {
 	EndpointParamMeta,
 	IParamDecoratorActions,
 	ParamDecorator,
-} from "../helpers/aq-base.types";
+} from '../helpers/aq-base.types';
 
-import { DefaultCasters } from "../helpers";
+import { DefaultCasters } from '../helpers';
 
-import { paramMetaSymbol } from "./symbols";
+import { paramMetaSymbol } from './symbols';
 
 export function UnifiedParam(path?: string, autoCast = true) {
 	return createParamDecoratorInternal(path, autoCast, {
@@ -68,19 +68,19 @@ export function Query(path?: string, autoCast = true) {
 	});
 }
 export function Res() {
-	return createParamDecoratorInternal("", false, {
+	return createParamDecoratorInternal('', false, {
 		getValue: (req: Request, res: Response): unknown | Promise<unknown> => res,
 	});
 }
 
 export function Req() {
-	return createParamDecoratorInternal("", false, {
+	return createParamDecoratorInternal('', false, {
 		getValue: (req: Request): unknown | Promise<unknown> => req,
 	});
 }
 
 export function Next() {
-	return createParamDecoratorInternal("", false, {
+	return createParamDecoratorInternal('', false, {
 		getValue: (
 			req: Request,
 			res: Response,
@@ -103,7 +103,7 @@ function createParamDecoratorInternal(
 	) {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const propertyTypes: unknown[] = Reflect.getMetadata(
-			"design:paramtypes",
+			'design:paramtypes',
 			target,
 			methodName,
 		);
@@ -151,9 +151,9 @@ export function getVariableName(
 	index: number,
 ): string {
 	const methodStr = method.toString();
-	const methodSanitized = methodStr.replace(/\n/g, "").replace(/\s+/g, " ");
+	const methodSanitized = methodStr.replace(/\n/g, '').replace(/\s+/g, ' ');
 
-	let funcDefParams = "";
+	let funcDefParams = '';
 	let funcDefParamsStart = false;
 	let foundFuncDefEnd = false;
 	let charIndex = 0;
@@ -161,10 +161,10 @@ export function getVariableName(
 
 	while (!(foundFuncDefEnd && funcDefParamsStart)) {
 		const c = methodSanitized.charAt(charIndex++);
-		if (c === "(") {
+		if (c === '(') {
 			openParenthesisCount++;
 			funcDefParamsStart = true;
-		} else if (c === ")") {
+		} else if (c === ')') {
 			openParenthesisCount--;
 		}
 		if (openParenthesisCount === 0 && funcDefParamsStart)
@@ -173,14 +173,14 @@ export function getVariableName(
 	}
 
 	funcDefParams = funcDefParams.substring(1, funcDefParams.length - 1);
-	const paramsArr = funcDefParams.split(",");
+	const paramsArr = funcDefParams.split(',');
 
 	const paramToRetun = paramsArr[index];
 	if (!paramToRetun)
 		throw new Error(`cannot find variable on index ${index} for ${methodName}`);
 
-	if (paramToRetun.includes("=")) {
-		return paramToRetun.split("=")[0].trim();
+	if (paramToRetun.includes('=')) {
+		return paramToRetun.split('=')[0].trim();
 	}
 	return paramToRetun.trim();
 }

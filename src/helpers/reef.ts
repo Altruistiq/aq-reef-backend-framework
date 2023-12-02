@@ -1,12 +1,12 @@
-import { readdirSync, statSync } from "fs";
-import { join } from "path";
-import "reflect-metadata";
+import { readdirSync, statSync } from 'fs';
+import { join } from 'path';
+import 'reflect-metadata';
 
-import { Express, RequestHandler, Request } from "express";
+import { Express, Request, RequestHandler } from 'express';
 
-import { ErrorRequestHandler } from "express-serve-static-core";
+import { ErrorRequestHandler } from 'express-serve-static-core';
 
-import { setLoggerFn } from "../decorators/log.decorator";
+import { setLoggerFn } from '../decorators/log.decorator';
 
 import {
 	CasterClass,
@@ -14,8 +14,8 @@ import {
 	GenericLogger,
 	IMiddlewareGenerator,
 	MiddlewareGeneratorClass,
-} from "./aq-base.types";
-import { DefaultCasters } from "./default-casters.helper";
+} from './aq-base.types';
+import { DefaultCasters } from './default-casters.helper';
 
 /**
  * Class that find and loads the controllers
@@ -27,7 +27,7 @@ export class Reef {
 
 	private readonly app: Express;
 
-	private mainRoute = "";
+	private mainRoute = '';
 
 	private CastersClass: CasterClass<any> | undefined;
 
@@ -144,7 +144,7 @@ export class Reef {
 
 		for (const file of absolutePathFiles) {
 			// eslint-disable-next-line no-param-reassign
-			if (controllerFileNamePattern && controllerFileNamePattern.lastIndex)
+			if (controllerFileNamePattern?.lastIndex)
 				controllerFileNamePattern.lastIndex = 0;
 			allowedExtRegexp.lastIndex = 0;
 
@@ -172,7 +172,7 @@ export class Reef {
 						);
 					})
 					.catch((err) => {
-						console.error("cannot load controller file: ", file, err);
+						console.error('cannot load controller file: ', file, err);
 						throw err;
 					}),
 			);
@@ -185,7 +185,7 @@ export class Reef {
 	}
 
 	private getFilesRecursively(directory: string, files: string[] = []) {
-		const filesInDirectory = readdirSync(directory, { encoding: "utf8" });
+		const filesInDirectory = readdirSync(directory, { encoding: 'utf8' });
 		for (const file of filesInDirectory) {
 			const absolute = join(directory, file);
 			if (statSync(absolute).isDirectory()) {

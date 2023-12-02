@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import express, {
 	Express,
 	NextFunction,
@@ -6,7 +5,8 @@ import express, {
 	RequestHandler,
 	Response,
 	Router,
-} from "express";
+} from 'express';
+import 'reflect-metadata';
 
 import {
 	controllerMetaSymbol,
@@ -15,7 +15,7 @@ import {
 	middlewareControllerKey,
 	paramMetaSymbol,
 	preExecutionHookSymbol,
-} from "../decorators/symbols";
+} from '../decorators/symbols';
 
 import {
 	ControllerMeta,
@@ -27,8 +27,8 @@ import {
 	GenericLogger,
 	IMiddlewareGenerator,
 	REST_METHODS,
-} from "./aq-base.types";
-import { DefaultCasters } from "./default-casters.helper";
+} from './aq-base.types';
+import { DefaultCasters } from './default-casters.helper';
 
 /**
  * BaseController is the class that every controller should extend.
@@ -128,7 +128,7 @@ export abstract class BaseController {
 		endpointHooks: EndpointHook[],
 	): CreatedEndpointInfo {
 		const endpointPath = `${basePath}/${endpoint.path}`;
-		const path = `/${endpointPath}`.replace(/\/+/g, "/");
+		const path = `/${endpointPath}`.replace(/\/+/g, '/');
 		const endpointMethod: REST_METHODS = (
 			method || this.getMethod(endpoint.path)
 		).toUpperCase() as REST_METHODS;
@@ -218,8 +218,8 @@ export abstract class BaseController {
 		return Number(`${Date.now()}${Math.floor(Math.random() * 100000)}`)
 			.toString(36)
 			.toUpperCase()
-			.padEnd(12, "*")
-			.replace(/^(.{4})(.{4})(.{4})/, "$1-$2-$3");
+			.padEnd(12, '*')
+			.replace(/^(.{4})(.{4})(.{4})/, '$1-$2-$3');
 	}
 
 	/**
@@ -260,7 +260,7 @@ export abstract class BaseController {
 				funcWrapper[callStackIdPattern] = async function tackerFunc() {
 					const funcDef = `${
 						targetClass?.constructor?.name
-					}.${endpointFunc?.name?.replace("bound ", "")}`;
+					}.${endpointFunc?.name?.replace('bound ', '')}`;
 					const logger = getLogger(funcDef, path);
 
 					try {
@@ -274,7 +274,7 @@ export abstract class BaseController {
 						);
 						const loggerTitle = `${path} -> ${funcDef}`;
 						logger.info(`${loggerTitle} endpoint invoked`);
-						if (autoResponse) res.header("x-trace-id", traceId);
+						if (autoResponse) res.header('x-trace-id', traceId);
 
 						let endpointErr: Error | undefined;
 						// resolve all the promises from the injected variables
@@ -309,7 +309,7 @@ export abstract class BaseController {
 							.finally(() => {
 								logger.info(
 									`${loggerTitle} endpoint responded ${
-										endpointErr ? "with error" : "successfully"
+										endpointErr ? 'with error' : 'successfully'
 									}.`,
 								);
 							});
@@ -342,7 +342,7 @@ export abstract class BaseController {
 		next: NextFunction,
 		logger: GenericLogger,
 	): void {
-		let mutErr = err
+		let mutErr = err;
 		if (!(mutErr instanceof Error)) {
 			logger.error(`!Important, thrown non-error item: ${err}`);
 			mutErr = new Error(String(err));
@@ -422,11 +422,11 @@ export abstract class BaseController {
 	 */
 	private getMethod(endpointPath: string): REST_METHODS {
 		let method = REST_METHODS.POST;
-		if (endpointPath.includes("get") || endpointPath.includes("list"))
+		if (endpointPath.includes('get') || endpointPath.includes('list'))
 			method = REST_METHODS.GET;
-		if (endpointPath.includes("update")) method = REST_METHODS.PATCH;
-		if (endpointPath.includes("delete")) method = REST_METHODS.DELETE;
-		if (endpointPath.includes("create")) method = REST_METHODS.POST;
+		if (endpointPath.includes('update')) method = REST_METHODS.PATCH;
+		if (endpointPath.includes('delete')) method = REST_METHODS.DELETE;
+		if (endpointPath.includes('create')) method = REST_METHODS.POST;
 
 		return method;
 	}
@@ -442,7 +442,7 @@ export abstract class BaseController {
 		endpointsInfo: CreatedEndpointInfo[],
 		controllerName: string,
 	): void {
-		const logger = this.getLogger("Endpoint Information");
+		const logger = this.getLogger('Endpoint Information');
 		const controllerInfo = {
 			Controller: controllerName,
 			endpoints: [] as unknown[],
@@ -451,7 +451,7 @@ export abstract class BaseController {
 			controllerInfo.endpoints.push({
 				Method: ep.HTTPMethod,
 				Function: ep.methodName,
-				Path: `${this.mainRoutePath}${ep.path}`.replaceAll(/\/+/g, "/"),
+				Path: `${this.mainRoutePath}${ep.path}`.replaceAll(/\/+/g, '/'),
 			});
 		}
 

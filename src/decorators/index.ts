@@ -1,4 +1,4 @@
-export { Controller, createControllerMiddleware } from "./controller.decorator";
+export { Controller, createControllerMiddleware } from './controller.decorator';
 export {
 	Endpoint,
 	Get,
@@ -7,7 +7,7 @@ export {
 	Post,
 	Patch,
 	createEndpointMiddleware,
-} from "./endpoint.decorator";
+} from './endpoint.decorator';
 export {
 	UnifiedParam,
 	Param,
@@ -17,5 +17,5 @@ export {
 	Res,
 	createParamDecorator,
 	Next,
-} from "./base-param-decorators.class";
-export { Log, Logger } from "./log.decorator";
+} from './base-param-decorators.class';
+export { Log, Logger } from './log.decorator';

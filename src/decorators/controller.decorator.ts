@@ -1,6 +1,6 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 
-import { controllerMetaSymbol, middlewareControllerKey } from "./symbols";
+import { controllerMetaSymbol, middlewareControllerKey } from './symbols';
 
 /**
  * Controller decorator function.
@@ -8,26 +8,25 @@ import { controllerMetaSymbol, middlewareControllerKey } from "./symbols";
  * @param {string} basePath
  */
 export function Controller(basePath: string) {
-	return function (constructor) {
+	return function (constr: any) {
 		let controllerMeta =
-			Reflect.getMetadata(controllerMetaSymbol, constructor) || {};
+			Reflect.getMetadata(controllerMetaSymbol, constr) || {};
 
 		controllerMeta = {
 			...controllerMeta,
 			basePath,
 		};
 
-		Reflect.defineMetadata(controllerMetaSymbol, controllerMeta, constructor);
+		Reflect.defineMetadata(controllerMetaSymbol, controllerMeta, constr);
 	};
 }
 
 export function createControllerMiddleware(subject: symbol, params: unknown) {
-	return function (constructor) {
-		const controllerMiddlewareInfo =
-			Reflect.getMetadata(subject, constructor) || {};
+	return function (constr: any) {
+		const controllerMiddlewareInfo = Reflect.getMetadata(subject, constr) || {};
 		if (!controllerMiddlewareInfo[middlewareControllerKey])
 			controllerMiddlewareInfo[middlewareControllerKey] = [];
 		controllerMiddlewareInfo[middlewareControllerKey].push(params);
-		Reflect.defineMetadata(subject, controllerMiddlewareInfo, constructor);
+		Reflect.defineMetadata(subject, controllerMiddlewareInfo, constr);
 	};
 }

@@ -1,13 +1,13 @@
-import "reflect-metadata";
-import { BaseController } from "../helpers/base-controller.class";
+import 'reflect-metadata';
 import {
 	AnyFunction,
 	EndpointParamMeta,
 	LogParamDecorator,
-} from "../helpers/aq-base.types";
+} from '../helpers/aq-base.types';
+import { BaseController } from '../helpers/base-controller.class';
 
-import { loggerMetadataKeySymbol, paramMetaSymbol } from "./symbols";
-import { getVariableName } from "./base-param-decorators.class";
+import { getVariableName } from './base-param-decorators.class';
+import { loggerMetadataKeySymbol, paramMetaSymbol } from './symbols';
 
 let getLogger;
 export function setLoggerFn(getLoggerFn) {
@@ -78,7 +78,7 @@ export function Logger(): LogParamDecorator {
 				name: variableName,
 				path: null,
 				cast: false,
-				actions: { getValue: () => getLogger("MY LOGGER") },
+				actions: { getValue: () => getLogger('MY LOGGER') },
 			};
 			Reflect.defineMetadata(paramMetaSymbol, paramMeta, target, methodName);
 		} else {

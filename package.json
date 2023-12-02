@@ -6,6 +6,7 @@
     "test": "./scripts/run-tests.sh",
     "build-package": "rm -rf ./pkg && npm i && npm run tsc",
     "tsc": "tsc",
+    "lint": "biome check --apply-unsafe ./src",
     "format": "biome format --write ./src"
   },
   "repository": {

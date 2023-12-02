@@ -1,11 +1,11 @@
-console.log('Injecting compiler')
+console.log('Injecting compiler');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { join } = require('path')
+const { join } = require('path');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { register } = require('ts-node')
+const { register } = require('ts-node');
 
 register({
-  project: join(__dirname, '../tsconfig.json'),
+	project: join(__dirname, '../tsconfig.json'),
 });
-console.log('ts-node injected')
+console.log('ts-node injected');

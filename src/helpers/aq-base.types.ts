@@ -1,6 +1,6 @@
-import { RequestHandler, Request, Response, NextFunction } from "express";
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 
-import { DefaultCasters } from "./default-casters.helper";
+import { DefaultCasters } from './default-casters.helper';
 
 export type CasterClass<T extends DefaultCasters> = new (
 	...args: unknown[]
@@ -110,11 +110,11 @@ export interface IParamDecoratorActions {
 }
 
 export enum REST_METHODS {
-	DELETE = "delete",
-	GET = "get",
-	PATCH = "patch",
-	POST = "post",
-	PUT = "put",
+	DELETE = 'delete',
+	GET = 'get',
+	PATCH = 'patch',
+	POST = 'post',
+	PUT = 'put',
 }
 
 export type ControllerBundle = {

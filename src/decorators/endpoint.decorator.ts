@@ -1,20 +1,20 @@
-import "reflect-metadata";
-import { RequestHandler } from "express";
+import { RequestHandler } from 'express';
+import 'reflect-metadata';
 
-import { BaseController } from "../helpers";
+import { BaseController } from '../helpers';
 
 import {
 	EndpointDecorator,
 	EndpointInfo,
 	PreHookFn,
 	REST_METHODS,
-} from "../helpers/aq-base.types";
+} from '../helpers/aq-base.types';
 
 import {
 	directMiddlewareSymbol,
 	endpointMetaSymbol,
 	preExecutionHookSymbol,
-} from "./symbols";
+} from './symbols';
 
 /**
  * Decorator for the target endpoint function
@@ -22,7 +22,7 @@ import {
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Endpoint(path: string, autoResponse: boolean = true) {
+export function Endpoint(path: string, autoResponse = true) {
 	return defineEndpoint(path, autoResponse);
 }
 
@@ -31,10 +31,7 @@ export function Endpoint(path: string, autoResponse: boolean = true) {
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Get(
-	path: string,
-	autoResponse: boolean = true,
-): EndpointDecorator {
+export function Get(path: string, autoResponse = true): EndpointDecorator {
 	return defineEndpoint(path, autoResponse, REST_METHODS.GET);
 }
 
@@ -43,10 +40,7 @@ export function Get(
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Post(
-	path: string,
-	autoResponse: boolean = true,
-): EndpointDecorator {
+export function Post(path: string, autoResponse = true): EndpointDecorator {
 	return defineEndpoint(path, autoResponse, REST_METHODS.POST);
 }
 
@@ -55,10 +49,7 @@ export function Post(
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Put(
-	path: string,
-	autoResponse: boolean = true,
-): EndpointDecorator {
+export function Put(path: string, autoResponse = true): EndpointDecorator {
 	return defineEndpoint(path, autoResponse, REST_METHODS.PUT);
 }
 
@@ -67,10 +58,7 @@ export function Put(
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Patch(
-	path: string,
-	autoResponse: boolean = true,
-): EndpointDecorator {
+export function Patch(path: string, autoResponse = true): EndpointDecorator {
 	return defineEndpoint(path, autoResponse, REST_METHODS.PATCH);
 }
 
@@ -79,10 +67,7 @@ export function Patch(
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Delete(
-	path: string,
-	autoResponse: boolean = true,
-): EndpointDecorator {
+export function Delete(path: string, autoResponse = true): EndpointDecorator {
 	return defineEndpoint(path, autoResponse, REST_METHODS.DELETE);
 }
 
@@ -99,7 +84,7 @@ export function Middleware(...args: RequestHandler[]) {
  */
 function defineEndpoint(
 	path: string,
-	autoResponse: boolean = true,
+	autoResponse = true,
 	method: REST_METHODS | null = null,
 ): EndpointDecorator {
 	return function (

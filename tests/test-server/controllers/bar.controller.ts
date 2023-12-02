@@ -1,9 +1,8 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, Res} from "../reef/decorators";
+import {Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, Res, BaseController} from "../reef";
 import {Request, Response} from "express"
 import {FooService} from "../test-helpers/foo.service";
 import {AuthRoles} from "../reef-extends/middleware.decorators";
 import {USER_ROLE} from "../reef-extends/basic.defs";
-import {BaseController} from "../reef/helpers";
 import {Header} from "../reef-extends/param.decorators";
 
 
@@ -26,12 +25,12 @@ export default class BarController extends BaseController {
     return {val}
   }
   @Delete('/')
-  simpleDelete(@Body() val: string) {
+  simpleDelete(@Body() _val: string) {
     return { delete: 'delete' }
   }
 
   @Patch('/')
-  simplePatch(@Body() val) {
+  simplePatch(@Body() val: unknown) {
     return { val }
   }
   @Get('/:urlParam/test')
