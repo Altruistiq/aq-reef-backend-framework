@@ -4,7 +4,8 @@
   "description": "a typescript web framework",
   "scripts": {
     "test": "./scripts/run-tests.sh",
-    "tsc": "tsc",
+    "test-watch": "./scripts/run-tests.sh watch",
+    "tsc": "tsc --noEmit",
     "lint": "biome check --apply-unsafe ./src",
     "format": "biome format --write ./src"
   },
