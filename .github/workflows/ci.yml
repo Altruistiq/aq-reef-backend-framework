@@ -16,5 +16,5 @@ jobs:
         with:
           node-version: 18.x
 
-      - run: pnpm install
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm run test
