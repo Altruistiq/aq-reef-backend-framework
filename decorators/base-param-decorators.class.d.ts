@@ -1,0 +1,10 @@
+import { IParamDecoratorActions, ParamDecorator } from '../helpers/aq-base.types';
+export declare function UnifiedParam(path?: string, autoCast?: boolean): ParamDecorator;
+export declare function Param(path?: string, autoCast?: boolean): ParamDecorator;
+export declare function Body(path?: string, autoCast?: boolean): ParamDecorator;
+export declare function Query(path?: string, autoCast?: boolean): ParamDecorator;
+export declare function Res(): ParamDecorator;
+export declare function Req(): ParamDecorator;
+export declare function Next(): ParamDecorator;
+export declare function createParamDecorator(actions: IParamDecoratorActions): ParamDecorator;
+export declare function getVariableName(methodName: string, method: (...args: any[]) => unknown, index: number): string;

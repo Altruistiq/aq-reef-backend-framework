@@ -1,0 +1,1 @@
+{"version":3,"file":"trace-id.helper.js","sourceRoot":"","sources":["../../src/helpers/trace-id.helper.ts"],"names":[],"mappings":";;;AAAA,SAAgB,UAAU;IACzB,MAAM,GAAG,GAAG,IAAI,KAAK,EAAE,CAAC;IACxB,MAAM,aAAa,GAAG,gDAAgD,CAAC,IAAI,CAC1E,GAAG,CAAC,KAAe,CACnB,CAAC;IACF,IAAI,CAAC,aAAa;QAAE,OAAO,SAAS,CAAC;IACrC,OAAO,aAAa,CAAC,CAAC,CAAC,CAAC;AACzB,CAAC;AAPD,gCAOC"}

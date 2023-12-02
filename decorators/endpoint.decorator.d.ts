@@ -1,0 +1,13 @@
+import { RequestHandler } from 'express';
+import 'reflect-metadata';
+import { BaseController } from '../helpers';
+import { EndpointDecorator, PreHookFn } from '../helpers/aq-base.types';
+export declare function Endpoint(path: string, autoResponse?: boolean): EndpointDecorator;
+export declare function Get(path: string, autoResponse?: boolean): EndpointDecorator;
+export declare function Post(path: string, autoResponse?: boolean): EndpointDecorator;
+export declare function Put(path: string, autoResponse?: boolean): EndpointDecorator;
+export declare function Patch(path: string, autoResponse?: boolean): EndpointDecorator;
+export declare function Delete(path: string, autoResponse?: boolean): EndpointDecorator;
+export declare function Middleware(...args: RequestHandler[]): (target: BaseController, methodName: string) => void;
+export declare function createEndpointMiddleware(subject: symbol, params: unknown): (target: BaseController, methodName: string) => void;
+export declare function createEndpointPreExecutionHook(params: unknown, preHook: PreHookFn): (target: BaseController, methodName: string) => void;

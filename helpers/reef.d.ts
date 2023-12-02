@@ -1,0 +1,30 @@
+import 'reflect-metadata';
+import { Express, Request, RequestHandler, ErrorRequestHandler } from 'express';
+import { CasterClass, ControllerBundle, GenericLogger, MiddlewareGeneratorClass } from './aq-base.types';
+export declare class Reef {
+    constructor(app: Express);
+    private readonly app;
+    private mainRoute;
+    private CastersClass;
+    private preRunList;
+    private postRunList;
+    private controllerBundles;
+    private globalMiddleware;
+    private middlewareGenerator;
+    private errorHandlerFn;
+    private getTraceIdFunction;
+    private getLoggerFn;
+    private hideLogsForErrors;
+    preRun(funcList: (app?: Express) => void | Promise<void>): this;
+    postRun(funcList: (app?: Express) => void | Promise<void>): this;
+    setMiddlewareGenerator(MiddlewareGenerator: MiddlewareGeneratorClass): this;
+    defineParamCaster(casters: CasterClass<any>): this;
+    setControllerBundle(bundle: ControllerBundle): this;
+    setTraceIdFn(getTraceIdFunction: (req: Request) => string): this;
+    launch(): Promise<void>;
+    setGlobalMiddleware(...middleware: RequestHandler[]): this;
+    addErrorHandler(errorHandler: ErrorRequestHandler): this;
+    setLoggerFn(loggerFn: (funcName: string, path?: string) => GenericLogger): this;
+    private loadControllers;
+    private getFilesRecursively;
+}
