@@ -1,10 +1,12 @@
 {
   "name": "reef-ts",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "a typescript web framework",
   "main": "/pkg",
+  "publishConfig": {},
   "files": [
-    "pkg"
+    "./pkg",
+    "README.md"
   ],
   "scripts": {
     "test": "./scripts/run-tests.sh",
@@ -12,7 +14,9 @@
     "tsc": "tsc",
     "lint": "biome check --apply-unsafe ./src",
     "format": "biome format --write ./src",
-    "release": "cp -f README.md ./pkg && changeset publish"
+    "changeset": "rm -rf pkg && tsc && changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "cp -f README.md ./pkg && changeset publish"
   },
   "repository": {
     "type": "git",
@@ -24,9 +28,7 @@
     "url": "https://github.com/Altruistiq/reef/issues"
   },
   "homepage": "https://github.com/Altruistiq/reef#readme",
-  "peerDependencies": {
-    "express": "^4.18.2"
-  },
+  "peerDependencies": {},
   "devDependencies": {
     "@biomejs/biome": "1.0.0",
     "@types/chai": "^4.3.5",
@@ -37,13 +39,14 @@
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
-  },
-  "dependencies": {
+    "typescript": "^5.1.6",
     "@changesets/cli": "^2.27.1",
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.4.0",
-    "lodash": "^4.17.21",
     "reflect-metadata": "^0.1.13"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "lodash": "^4.17.21"
   }
 }
