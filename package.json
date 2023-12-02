@@ -2,12 +2,16 @@
   "name": "reef-framework",
   "version": "0.0.1-development.0",
   "description": "a typescript web framework",
-  "main": "/pkg",
+  "main": "/",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "./pkg",
+    "decorators",
+    "errors",
+    "helpers",
+    "index.d.ts",
+    "index.js",
     "README.md"
   ],
   "scripts": {
