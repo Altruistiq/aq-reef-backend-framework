@@ -1,11 +1,20 @@
-import 'reflect-metadata'
-import { RequestHandler } from 'express'
+import "reflect-metadata";
+import { RequestHandler } from "express";
 
-import { BaseController } from '../helpers/base-controller.class'
+import { BaseController } from "../helpers";
 
-import { EndpointDecorator, EndpointInfo, PreHookFn, REST_METHODS } from '../helpers/aq-base.types'
+import {
+	EndpointDecorator,
+	EndpointInfo,
+	PreHookFn,
+	REST_METHODS,
+} from "../helpers/aq-base.types";
 
-import { directMiddlewareSymbol, endpointMetaSymbol, preExecutionHookSymbol } from './symbols'
+import {
+	directMiddlewareSymbol,
+	endpointMetaSymbol,
+	preExecutionHookSymbol,
+} from "./symbols";
 
 /**
  * Decorator for the target endpoint function
@@ -13,8 +22,8 @@ import { directMiddlewareSymbol, endpointMetaSymbol, preExecutionHookSymbol } fr
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Endpoint(path: string, autoResponse = true) {
-  return defineEndpoint(path, autoResponse)
+export function Endpoint(path: string, autoResponse: boolean = true) {
+	return defineEndpoint(path, autoResponse);
 }
 
 /**
@@ -22,8 +31,11 @@ export function Endpoint(path: string, autoResponse = true) {
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Get<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
-  return defineEndpoint(path, autoResponse, REST_METHODS.GET)
+export function Get(
+	path: string,
+	autoResponse: boolean = true,
+): EndpointDecorator {
+	return defineEndpoint(path, autoResponse, REST_METHODS.GET);
 }
 
 /**
@@ -31,8 +43,11 @@ export function Get<C extends BaseController>(path: string, autoResponse = true)
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Post<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
-  return defineEndpoint(path, autoResponse, REST_METHODS.POST)
+export function Post(
+	path: string,
+	autoResponse: boolean = true,
+): EndpointDecorator {
+	return defineEndpoint(path, autoResponse, REST_METHODS.POST);
 }
 
 /**
@@ -40,8 +55,11 @@ export function Post<C extends BaseController>(path: string, autoResponse = true
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Put<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
-  return defineEndpoint(path, autoResponse, REST_METHODS.PUT)
+export function Put(
+	path: string,
+	autoResponse: boolean = true,
+): EndpointDecorator {
+	return defineEndpoint(path, autoResponse, REST_METHODS.PUT);
 }
 
 /**
@@ -49,8 +67,11 @@ export function Put<C extends BaseController>(path: string, autoResponse = true)
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Patch<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
-  return defineEndpoint(path, autoResponse, REST_METHODS.PATCH)
+export function Patch(
+	path: string,
+	autoResponse: boolean = true,
+): EndpointDecorator {
+	return defineEndpoint(path, autoResponse, REST_METHODS.PATCH);
 }
 
 /**
@@ -58,12 +79,15 @@ export function Patch<C extends BaseController>(path: string, autoResponse = tru
  * @param {string} path - the endpoint sub-path
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  */
-export function Delete<C extends BaseController>(path: string, autoResponse = true): EndpointDecorator<C> {
-  return defineEndpoint(path, autoResponse, REST_METHODS.DELETE)
+export function Delete(
+	path: string,
+	autoResponse: boolean = true,
+): EndpointDecorator {
+	return defineEndpoint(path, autoResponse, REST_METHODS.DELETE);
 }
 
 export function Middleware(...args: RequestHandler[]) {
-  return createEndpointMiddleware(directMiddlewareSymbol, args)
+	return createEndpointMiddleware(directMiddlewareSymbol, args);
 }
 
 /**
@@ -73,35 +97,40 @@ export function Middleware(...args: RequestHandler[]) {
  * @param {boolean} autoResponse - if false the endpoint won't convert the return of the function to the request response
  * @param {REST_METHODS | null} method
  */
-function defineEndpoint<C extends BaseController>(
-  path: string,
-  autoResponse = true,
-  method: REST_METHODS | null = null,
-): EndpointDecorator<C> {
-  return function (target: BaseController, methodName: string, descriptor: PropertyDescriptor) {
-    const endpointInfo = Reflect.getMetadata(endpointMetaSymbol, target) || []
+function defineEndpoint(
+	path: string,
+	autoResponse: boolean = true,
+	method: REST_METHODS | null = null,
+): EndpointDecorator {
+	return function (
+		target: any,
+		methodName: string,
+		descriptor: PropertyDescriptor,
+	) {
+		const endpointInfo = Reflect.getMetadata(endpointMetaSymbol, target) || [];
 
-    const payload: EndpointInfo = {
-      path,
-      methodName,
-      descriptor,
-      autoResponse,
-      method,
-      target,
-    }
+		const payload: EndpointInfo = {
+			path,
+			methodName,
+			descriptor,
+			autoResponse,
+			method,
+			target,
+		};
 
-    endpointInfo.push(payload)
-    Reflect.defineMetadata(endpointMetaSymbol, endpointInfo, target)
-  }
+		endpointInfo.push(payload);
+		Reflect.defineMetadata(endpointMetaSymbol, endpointInfo, target);
+	};
 }
 
 export function createEndpointMiddleware(subject: symbol, params: unknown) {
-  return function (target: BaseController, methodName: string) {
-    const controllerMiddlewareInfo = Reflect.getMetadata(subject, target) || {}
-    if (!controllerMiddlewareInfo[methodName]) controllerMiddlewareInfo[methodName] = []
-    controllerMiddlewareInfo[methodName].push(params)
-    Reflect.defineMetadata(subject, controllerMiddlewareInfo, target)
-  }
+	return function (target: BaseController, methodName: string) {
+		const controllerMiddlewareInfo = Reflect.getMetadata(subject, target) || {};
+		if (!controllerMiddlewareInfo[methodName])
+			controllerMiddlewareInfo[methodName] = [];
+		controllerMiddlewareInfo[methodName].push(params);
+		Reflect.defineMetadata(subject, controllerMiddlewareInfo, target);
+	};
 }
 
 /**
@@ -109,10 +138,19 @@ export function createEndpointMiddleware(subject: symbol, params: unknown) {
  * @param params
  * @param preHook
  */
-export function createEndpointPreExecutionHook(params: unknown, preHook: PreHookFn) {
-  return function (target: BaseController, methodName: string) {
-    const endpointHookInfo = Reflect.getMetadata(preExecutionHookSymbol, target, methodName) || []
-    endpointHookInfo.push({ params, preHook })
-    Reflect.defineMetadata(preExecutionHookSymbol, endpointHookInfo, target, methodName)
-  }
+export function createEndpointPreExecutionHook(
+	params: unknown,
+	preHook: PreHookFn,
+) {
+	return function (target: BaseController, methodName: string) {
+		const endpointHookInfo =
+			Reflect.getMetadata(preExecutionHookSymbol, target, methodName) || [];
+		endpointHookInfo.push({ params, preHook });
+		Reflect.defineMetadata(
+			preExecutionHookSymbol,
+			endpointHookInfo,
+			target,
+			methodName,
+		);
+	};
 }
