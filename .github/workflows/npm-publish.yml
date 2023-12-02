@@ -21,11 +21,11 @@ jobs:
 
       # Installing dependencies
       - name: Install Dependencies
-        run: pnpm install
+        run: npm install
 
       # Building the project
       - name: Build
-        run: pnpm build
+        run: npm build
 
       # Preparing package for release
       - name: Prepare Package
