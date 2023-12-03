@@ -1,4 +1,4 @@
-name: Release Workflow
+name: Publish to NPM
 
 on:
   push:
@@ -9,44 +9,18 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      # Checking out the repository
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      # Setting up Node.js environment
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v2
         with:
-          node-version: '18' # specify your Node.js version here
-
-      # Installing dependencies
-      - name: Install Dependencies
-        run: npm install
-
-      # Building the project
-      - name: Build
-        run: npm build
-
-      # Preparing package for release
-      - name: Prepare Package
-        run: cp package.json README.md pkg/
-
-      # Switching to 'releases' branch
-      - name: Switch to Releases Branch
-        run: git checkout releases
-
-      # Cleaning and updating the branch
-      - name: Update Releases Branch
+          fetch-depth: 0
+      - name: git config
         run: |
-          git rm -rf ./*
-          cp -R pkg/* .
-          git add .
-          git commit -m "auto-generate release $(git rev-parse --short HEAD)"
-          git push origin releases
-
-      # Running release-it
-      - name: Release to NPM
-        run: npx release-it
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+      - run: npm install
+      - run: npm run build
+      - run: git checkout releases
+      - run: git checkout releases
+      - run: npm run release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

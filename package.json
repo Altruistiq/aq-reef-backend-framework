@@ -1,8 +1,7 @@
 {
   "name": "reef-framework",
-  "version": "0.0.1-development.0",
+  "version": "0.0.3-development.0",
   "description": "a typescript web framework",
-  "main": "/",
   "publishConfig": {
     "access": "public"
   },
@@ -20,9 +19,7 @@
     "tsc": "tsc",
     "lint": "biome check --apply-unsafe ./src",
     "format": "biome format --write ./src",
-    "changeset": "rm -rf pkg && tsc && changeset",
-    "changeset:version": "changeset version",
-    "changeset:publish": "cp -f README.md ./pkg && changeset publish",
+    "build": "rm -rf pkg && tsc",
     "release": "release-it"
   },
   "repository": {
