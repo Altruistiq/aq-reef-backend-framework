@@ -19,7 +19,8 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: git checkout releases
-      - run: git checkout releases
+      - run: git merge main
+      - run: cp -rf ./pkg/* .
       - run: npm run release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
