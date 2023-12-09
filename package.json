@@ -1,6 +1,6 @@
 {
   "name": "reef-framework",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "a typescript web framework",
   "main": "/pkg/index.js",
   "publishConfig": {
