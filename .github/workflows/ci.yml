@@ -9,13 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
-      - run: pnpm install --no-frozen-lockfile
-      - run: pnpm run tsc
-      - run: pnpm run test
+      - run: npm install
+      - run: npm run tsc -- --noEmit
+      - run: npm run test

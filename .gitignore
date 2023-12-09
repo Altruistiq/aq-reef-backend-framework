@@ -132,3 +132,4 @@ dist
 /pkg
 .idea
 .DS_Store
+.npmrc
