@@ -1,5 +1,12 @@
 
 
+## [0.0.10](https://github.com/Altruistiq/reef/compare/v0.0.9...v0.0.10) (2023-12-09)
+
+
+### Bug Fixes
+
+* removed github release flag ([d55087f](https://github.com/Altruistiq/reef/commit/d55087f3313e1bfd355d7ae0bf5be4fdf958e8ef))
+
 ## [0.0.9](https://github.com/Altruistiq/reef/compare/v0.0.8...v0.0.9) (2023-12-09)
 
 
