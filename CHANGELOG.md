@@ -1,5 +1,12 @@
 
 
+## 0.0.15 (2023-12-09)
+
+
+### Bug Fixes
+
+* updated version manually ([25dce59](https://github.com/Altruistiq/reef/commit/25dce593e62926511c67af81c81b9027093d1c7d))
+
 ## 0.0.12 (2023-12-09)
 
 
