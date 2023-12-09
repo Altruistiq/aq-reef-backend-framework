@@ -34,7 +34,7 @@ jobs:
 
       # Building the project
       - name: Build
-        run: npm tsc
+        run: npm run tsc
 
       # Running release-it
       - name: Release to NPM
