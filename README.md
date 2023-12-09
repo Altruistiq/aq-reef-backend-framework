@@ -32,14 +32,21 @@ In order to bootstrap the framework, you need to create a new `Reef` class passi
 const reef = new Reef(app)
 ```
 
-### Create a controller bundle
+### Controller Bundle Setup
 
-In the controller bundle you set the base url path, the path of the controller absolutePathFiles, a regex to match the filename (
-optional)
-and a boolean that sets if the framework will search only for ts file or for either ts and js absolutePathFiles
+To configure a controller bundle, create a `ControllerBundle` object with properties: `name` for the bundle identifier, `controllerDirPath` for the absolute path of the controller files, `baseRoute` for the base URL path, and `controllerFileNamePattern` which is a regex for matching controller filenames, supporting both `.ts` and `.js` files.
+
+Example in TypeScript:
 
 ```typescript
-  reef.setControllerBundle('/api/v1/', join(__dirname, 'controllers'), /^.+\.controller/g, true)
+  const controllerBundle: ControllerBundle = {
+    name: 'internal-api',
+    controllerDirPath: join(__dirname, 'controllers-internal-api'),
+    baseRoute: '/api/v1/',
+    controllerFileNamePattern: /(\.controller|Controller)\.(ts|js)/g,
+  }
+
+  reef.setControllerBundle(controllerBundle);
 ```
 
 ### Add global middleware
