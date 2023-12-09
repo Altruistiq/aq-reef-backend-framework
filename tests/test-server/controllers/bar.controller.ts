@@ -4,6 +4,7 @@ import {FooService} from "../test-helpers/foo.service";
 import {AuthRoles} from "../reef-extends/middleware.decorators";
 import {USER_ROLE} from "../reef-extends/basic.defs";
 import {Header} from "../reef-extends/param.decorators";
+import {TestService} from "../services/test.service";
 
 @Controller('bar')
 export default class BarController extends BaseController {
@@ -69,5 +70,11 @@ export default class BarController extends BaseController {
   @Get('custom-param-decorator-test')
   customParamDecoratorTest(@Header() xTestHeader: string) {
     return { header: xTestHeader }
+  }
+
+  @Get('service-invoke')
+  servInv() {
+    TestService.hello()
+    return { success: true }
   }
 }

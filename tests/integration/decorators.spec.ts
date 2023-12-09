@@ -180,4 +180,12 @@ describe('Testing Decorators', async () => {
 			.send();
 		assert.equal(body.success, true);
 	});
+
+	it('should be able invoke service with log decorator', async () => {
+		const { body } = await chai
+			.request(global._expressApp)
+			.get(`/api/v1/bar/service-invoke`)
+			.send();
+		assert.equal(body.success, true);
+	});
 });
