@@ -245,84 +245,57 @@ export abstract class BaseController {
 	): RequestHandler {
 		const getLogger = this.getLogger;
 		const { casters, generateTraceId } = this;
-		return function actualEndpointController(
-			req: Request,
-			res: Response,
-			next: NextFunction,
-		) {
-			const traceId = generateTraceId
-				? generateTraceId(req)
-				: BaseController.generateCallStackId();
+		return function actualEndpointController(req: Request, res: Response, next: NextFunction) {
+			const traceId = generateTraceId ? generateTraceId(req) : BaseController.generateCallStackId()
 			try {
-				const callStackIdPattern = `__REEF_CALL_STACK_${traceId}__END_OF_REEF__`;
-				res.locals.reef = { ...res.locals.reef, traceId, bundleName };
-				const funcWrapper: { [key: string]: () => Promise<void> } = {};
+				const callStackIdPattern = `__REEF_CALL_STACK_${traceId}__END_OF_REEF__`
+				res.locals.reef = { ...res.locals.reef, traceId, bundleName }
+				const funcWrapper: { [key: string]: () => Promise<void> } = {}
 				funcWrapper[callStackIdPattern] = async function tackerFunc() {
-					const funcDef = `${
-						targetClass?.constructor?.name
-					}.${endpointFunc?.name?.replace('bound ', '')}`;
-					const logger = getLogger(funcDef, path);
+					const funcDef = `${targetClass?.constructor?.name}.${endpointFunc?.name?.replace('bound ', '')}`
+					const logger = getLogger(funcDef, path)
+
+					let endpointErr: Error | undefined
+					const loggerTitle = `${path} -> ${funcDef}`
 
 					try {
-						const endpointVarPromises = BaseController.getEndpointInputVars(
+						const endpointVars = await BaseController.getEndpointInputVars(
 							req,
 							res,
 							endpointMeta,
 							casters,
 							logger,
 							next,
-						);
-						const loggerTitle = `${path} -> ${funcDef}`;
-						logger.info(`${loggerTitle} endpoint invoked`);
-						if (autoResponse) res.header('x-trace-id', traceId);
+						)
+						logger.info(`${loggerTitle} endpoint invoked`)
+						if (autoResponse) res.header('x-trace-id', traceId)
 
-						let endpointErr: Error | undefined;
 						// resolve all the promises from the injected variables
-						Promise.all(endpointVarPromises)
-							// Run the endpoints pre-execution hooks
-							.then((endpointVars) => {
-								const hookPromises = [];
-								for (const { params, preHook } of endpointHooks) {
-									hookPromises.push(
-										preHook(params, endpointVars, req, res, endpointMeta),
-									);
-								}
-								return Promise.all(hookPromises).then(() => endpointVars);
-							})
-							// Run the endpoint function
-							.then((endpointVars) => endpointFunc(...endpointVars))
-							// Handle the endpoint response
-							.then(
-								(endpointResponse) =>
-									autoResponse && res.json(endpointResponse),
-							)
-							// Handle any error that was thrown during the execution of the endpoint
-							.catch((err: Error) => {
-								endpointErr = err;
-								if (!(err instanceof Error)) {
-									logger.error(`!Important, thrown non-error item: ${err}`);
-									err = new Error(err);
-								}
-								next(err);
-							})
-							// Log the endpoint execution end
-							.finally(() => {
-								logger.info(
-									`${loggerTitle} endpoint responded ${
-										endpointErr ? 'with error' : 'successfully'
-									}.`,
-								);
-							});
+						// Run the endpoints pre-execution hooks
+
+						const hookPromises = []
+						for (const { params, preHook } of endpointHooks) {
+							hookPromises.push(preHook(params, endpointVars, req, res, endpointMeta))
+						}
+						await Promise.all(hookPromises)
+
+						// Run the endpoint function
+						const endpointResponse = await endpointFunc(...endpointVars)
+						// Handle the endpoint response
+						if (autoResponse) res.json(endpointResponse)
 					} catch (err) {
-						BaseController.handleResponseError(err, req, res, next, logger);
+						endpointErr = err as Error
+						BaseController.handleResponseError(err as Error, req, res, next, logger)
+					} finally {
+						logger.info(`${loggerTitle} endpoint responded ${endpointErr ? 'with error' : 'successfully'}.`)
 					}
-				};
-				funcWrapper[callStackIdPattern]();
+				}
+				funcWrapper[callStackIdPattern]()
 			} catch (e) {
-				const logger = getLogger(endpointFunc.name, path);
-				BaseController.handleResponseError(e, req, res, next, logger);
+				const logger = getLogger(endpointFunc.name, path)
+				BaseController.handleResponseError(e as Error, req, res, next, logger)
 			}
-		};
+		}
 	}
 
 	/**
@@ -362,36 +335,29 @@ export abstract class BaseController {
 	 * @return {unknown[]}
 	 * @private
 	 */
-	private static getEndpointInputVars(
+	private static async getEndpointInputVars(
 		req: Request,
 		res: Response,
 		endpointParamMeta: EndpointParamMeta[],
 		casters: DefaultCasters,
 		logger: GenericLogger,
 		next: NextFunction,
-	): Promise<unknown>[] {
-		if (!endpointParamMeta) endpointParamMeta = [];
-		const inputVarsPromises = Array(endpointParamMeta.length);
+	): Promise<unknown[]> {
+		// eslint-disable-next-line no-param-reassign
+		if (!endpointParamMeta) endpointParamMeta = []
+		const inputVarsPromises = Array(endpointParamMeta.length)
 		// eslint-disable-next-line no-restricted-syntax
 		for (const [index, meta] of endpointParamMeta.entries()) {
 			if (!meta) {
-				logger.warn(
-					`endpoint function input variable has no decorator on index ${index}`,
-				);
-				continue;
+				logger.warn(`endpoint function input variable has no decorator on index ${index}`)
+				continue
 			}
-			const paramVar = BaseController.getParamVar(
-				req,
-				res,
-				meta,
-				casters,
-				next,
-			);
-			if (paramVar instanceof Promise) inputVarsPromises[meta.index] = paramVar;
-			else inputVarsPromises[meta.index] = Promise.resolve(paramVar);
+			const paramVarP = BaseController.getParamVar(req, res, meta, casters, next)
+			if (paramVarP instanceof Promise) inputVarsPromises[meta.index] = await paramVarP
+			else inputVarsPromises[meta.index] = paramVarP
 		}
 
-		return inputVarsPromises;
+		return inputVarsPromises
 	}
 
 	/**
