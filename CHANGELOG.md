@@ -1,5 +1,12 @@
 
 
+## [0.0.11](https://github.com/Altruistiq/reef/compare/v0.0.10...v0.0.11) (2023-12-09)
+
+
+### Bug Fixes
+
+* re enabled git release ([14b9a2c](https://github.com/Altruistiq/reef/commit/14b9a2c80b52e1b183eff2cd30e14dee4bf17141))
+
 ## [0.0.10](https://github.com/Altruistiq/reef/compare/v0.0.9...v0.0.10) (2023-12-09)
 
 
