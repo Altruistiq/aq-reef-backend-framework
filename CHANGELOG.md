@@ -1,5 +1,12 @@
 
 
+## 0.0.12 (2023-12-09)
+
+
+### Bug Fixes
+
+* added run npm command on publish workflow ([cfc4ee1](https://github.com/Altruistiq/reef/commit/cfc4ee12ff24bf24d49715b2b0eb38eb239cbd70))
+
 ## [0.0.11](https://github.com/Altruistiq/reef/compare/v0.0.10...v0.0.11) (2023-12-09)
 
 
