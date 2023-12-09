@@ -19,7 +19,7 @@
     "changeset": "rm -rf pkg && tsc && changeset",
     "changeset:version": "changeset version",
     "changeset:publish": "cp -f README.md ./pkg && changeset publish",
-    "release": "rm -rf pkg && tsc && release-it"
+    "release": "rm -rf pkg && tsc && release-it -y"
   },
   "repository": {
     "type": "git",
@@ -59,7 +59,7 @@
       "commitMessage": "chore: release v${version}"
     },
     "github": {
-      "release": true
+      "release": false
     },
     "npm": {
       "publish": true
