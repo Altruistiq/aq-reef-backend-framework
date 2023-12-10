@@ -32,7 +32,7 @@ export async function initializeServer() {
 		.setMiddlewareGenerator(MiddlewareGenerator)
 		.addErrorHandler(TestErrorHandler)
 		// .setGetTraceIdFunction((res) =>  res.header('x-aws-trace'))
-		.setLoggerFn(getLogger)
+		// .setLoggerFn(getLogger)
 		.launch();
 
 	return app;

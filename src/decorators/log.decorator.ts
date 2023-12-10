@@ -4,7 +4,7 @@ import {
 	EndpointParamMeta,
 	LogParamDecorator,
 } from '../helpers/aq-base.types';
-import { BaseController } from '../helpers/base-controller.class';
+import { BaseController } from '../helpers';
 
 import { getVariableName } from './base-param-decorators.class';
 import { loggerMetadataKeySymbol, paramMetaSymbol } from './symbols';

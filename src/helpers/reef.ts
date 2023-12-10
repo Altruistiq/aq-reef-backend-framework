@@ -14,6 +14,7 @@ import {
 	MiddlewareGeneratorClass,
 } from './aq-base.types';
 import { DefaultCasters } from './default-casters.helper';
+import {getLogger} from "./generic-logger.helper";
 
 /**
  * Class that find and loads the controllers
@@ -43,9 +44,7 @@ export class Reef {
 
 	private getTraceIdFunction: ((req: Request) => string) | undefined;
 
-	private getLoggerFn:
-		| ((funcName: string, path?: string) => GenericLogger)
-		| undefined;
+	private getLoggerFn: ((funcName: string, path?: string, traceId?: string) => GenericLogger) = getLogger
 
 	private hideLogsForErrors: string[] = [];
 
