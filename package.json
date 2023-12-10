@@ -2,7 +2,8 @@
   "name": "reef-framework",
   "version": "0.0.14",
   "description": "a typescript web framework",
-  "main": "/pkg/index.js",
+  "main": "pkg/index.js",
+  "types": "pkg/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
