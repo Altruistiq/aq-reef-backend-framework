@@ -7,6 +7,7 @@ export {
 	Post,
 	Patch,
 	createEndpointMiddleware,
+	Middleware,
 } from './endpoint.decorator';
 export {
 	UnifiedParam,
