@@ -10,3 +10,5 @@ export {
 	EndpointParamMeta,
 	ControllerBundle,
 } from './aq-base.types';
+
+export { getTraceId } from './trace-id.helper'
