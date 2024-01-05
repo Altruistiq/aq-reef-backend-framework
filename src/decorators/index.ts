@@ -8,6 +8,7 @@ export {
 	Patch,
 	createEndpointMiddleware,
 	Middleware,
+	createEndpointPreExecutionHook,
 } from './endpoint.decorator';
 export {
 	UnifiedParam,
