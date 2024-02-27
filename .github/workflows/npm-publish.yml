@@ -1,0 +1,44 @@
+name: Release & Publish ro NPM
+
+on: workflow_dispatch
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checking out the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Setting up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Installing dependencies
+      - name: Install Dependencies
+        run: npm ci
+
+      # Initializing git config
+      - name: Initialize git user
+        run: |
+          git config --global user.email "george@altruistiq.com"
+          git config --global user.name "Release n Publish Workflow"
+
+      # Initializing the npm with the $NPM_TOKEN
+      - name: Initialize the NPM config
+        run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Building the project
+      - name: Build
+        run: npm run tsc
+
+      # Running release-it
+      - name: Release to NPM
+        run: npm run release -- --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
