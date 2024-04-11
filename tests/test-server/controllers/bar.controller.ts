@@ -77,4 +77,18 @@ export default class BarController extends BaseController {
     TestService.hello()
     return { success: true }
   }
+
+  @Get('custom-response-func')
+  customResponseFunc() {
+    return this.reef()
+        .status(222)
+        .header('x-custom-hd', 'true')
+        .payload({ customVal: 'custom-res' });
+  }
+  @Get('custom-response-func-2')
+  customResponseFunc2() {
+    return this.reef()
+        .headers({'x-custom-hd1': 'true', 'x-custom-hd2': 'true2' })
+  }
+
 }
