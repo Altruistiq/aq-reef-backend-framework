@@ -27,8 +27,8 @@ jobs:
       # Initializing git config
       - name: Initialize git user
         run: |
-          git config --global user.email "george@altruistiq.com"
-          git config --global user.name "Release n Publish Workflow"
+          git config user.name "SeaminkBotAq"
+          git config user.email "github-bot-74h6x@altruistiq.com"
 
       # Initializing the npm with the $NPM_TOKEN
       - name: Initialize the NPM config
