@@ -1,6 +1,6 @@
 {
   "name": "reef-framework",
-  "version": "0.0.26",
+  "version": "0.0.28",
   "description": "a typescript web framework",
   "main": "pkg/index.js",
   "types": "pkg/index.d.ts",
@@ -13,8 +13,8 @@
   ],
   "scripts": {
     "test": "./scripts/run-tests.sh",
-    "test-watch": "./scripts/run-tests.sh watch",
     "tsc": "tsc",
+    "test-watch": "./scripts/run-tests.sh watch",
     "lint": "biome check --apply-unsafe ./src",
     "format": "biome format --write ./src",
     "changeset": "rm -rf pkg && tsc && changeset",
