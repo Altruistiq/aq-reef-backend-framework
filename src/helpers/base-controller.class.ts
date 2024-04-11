@@ -29,6 +29,7 @@ import {
 	REST_METHODS,
 } from './aq-base.types';
 import { DefaultCasters } from './default-casters.helper';
+import {CustomResponse} from "./custom-response.class";
 
 /**
  * BaseController is the class that every controller should extend.
@@ -282,7 +283,26 @@ export abstract class BaseController {
 						// Run the endpoint function
 						const endpointResponse = await endpointFunc(...endpointVars)
 						// Handle the endpoint response
-						if (autoResponse) res.json(endpointResponse)
+						if (autoResponse) {
+							if (endpointResponse instanceof CustomResponse) {
+								const headers = endpointResponse.getHeaders()
+								if (headers?.length) {
+									for (const [headerName, headerValue] of headers) {
+										res.setHeader(headerName, headerValue)
+									}
+								}
+
+								const statusCode = endpointResponse.getStatusCode()
+								if (statusCode) {
+									res.status(statusCode)
+								}
+
+								const payload = endpointResponse.getPayload() || ''
+								res.json(payload)
+							} else {
+								res.json(endpointResponse)
+							}
+						}
 					} catch (err) {
 						endpointErr = err as Error
 						BaseController.handleResponseError(err as Error, req, res, next, logger)
@@ -422,5 +442,9 @@ export abstract class BaseController {
 		}
 
 		logger.debug(`Controller: "${controllerName}" Registered`);
+	}
+
+	public reef(): CustomResponse {
+		return new CustomResponse();
 	}
 }

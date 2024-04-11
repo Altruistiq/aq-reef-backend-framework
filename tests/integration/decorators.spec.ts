@@ -188,4 +188,24 @@ describe('Testing Decorators', async () => {
 			.send();
 		assert.equal(body.success, true);
 	});
+
+	it('should be able to set custom status and headers', async () => {
+		const res = await chai
+			.request(global._expressApp)
+			.get(`/api/v1/bar/custom-response-func`)
+			.send();
+		assert.equal(res.body.customVal, 'custom-res');
+		assert.equal(res.statusCode, 222);
+		assert.equal(res.headers['x-custom-hd'],'true');
+
+	})
+	it('should be able to set custom headers test 2', async () => {
+		const res = await chai
+			.request(global._expressApp)
+			.get(`/api/v1/bar/custom-response-func-2`)
+			.send();
+		assert.equal(res.headers['x-custom-hd1'], 'true');
+		assert.equal(res.headers['x-custom-hd2'], 'true2');
+
+	})
 });
