@@ -9,6 +9,7 @@ export {
 	createEndpointMiddleware,
 	Middleware,
 	createEndpointPreExecutionHook,
+	createAfterResponseExecutionHook,
 } from './endpoint.decorator';
 export {
 	UnifiedParam,
