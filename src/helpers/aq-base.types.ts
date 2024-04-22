@@ -132,7 +132,23 @@ export type PreHookFn = (
 	paramMeta: EndpointParamMeta[],
 ) => Promise<void>;
 
-export type EndpointHook = {
+export type AfterResponseHookFn = (
+	params: unknown,
+	endpointVariables: unknown[],
+	responseObj: unknown,
+	endpointErr: Error | undefined,
+	req: Request,
+	res: Response,
+	paramMeta: EndpointParamMeta[],
+	logger: GenericLogger,
+) => Promise<void>;
+
+export type PreHook = {
 	params: unknown;
 	preHook: PreHookFn;
+};
+
+export type AfterExecHook = {
+	params: unknown;
+	hook: AfterResponseHookFn;
 };

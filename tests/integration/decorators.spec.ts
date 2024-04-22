@@ -1,5 +1,10 @@
 import chai, { assert } from 'chai';
+import sinon from 'sinon';
 describe('Testing Decorators', async () => {
+	afterEach(() => {
+		sinon.restore();
+	})
+
 	it('should be able to do a simple GET', async () => {
 		const testVal = 'simpleGETResponse';
 		const { body, status } = await chai
@@ -207,5 +212,40 @@ describe('Testing Decorators', async () => {
 		assert.equal(res.headers['x-custom-hd1'], 'true');
 		assert.equal(res.headers['x-custom-hd2'], 'true2');
 
+	})
+	it('should be able to execute the post response hook', async () => {
+		const stub = sinon.stub(console, 'debug');
+
+		const res = await chai
+			.request(global._expressApp)
+			.get(`/api/v1/bar/after-exec-hook?param1=test`)
+			.send();
+
+		sinon.assert.calledOnce(stub);
+		const args = stub.getCall(0).args
+		sinon.restore()
+
+		assert.deepEqual(args[1].params, {param: 'test'})
+		assert.exists(args[1].endpointVariables)
+		assert.deepEqual(args[1].responseObj, { afterExecHook: true })
+		assert.isUndefined(args[1].error)
+	})
+
+	it('should be able to execute the post response hook when error', async () => {
+		const stub = sinon.stub(console, 'debug');
+
+		const res = await chai
+			.request(global._expressApp)
+			.get(`/api/v1/bar/after-exec-hook-error`)
+			.send();
+
+
+		sinon.assert.calledOnce(stub);
+		const args = stub.getCall(0).args
+		sinon.restore()
+
+		assert.isTrue(args[1].error instanceof Error)
+		assert.equal(args[1].error.message, 'a-custom-error')
+		assert.deepEqual(args[1].params, {param: 'test'})
 	})
 });

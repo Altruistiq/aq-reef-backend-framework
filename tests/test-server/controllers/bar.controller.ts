@@ -5,6 +5,7 @@ import {AuthRoles} from "../reef-extends/middleware.decorators";
 import {USER_ROLE} from "../reef-extends/basic.defs";
 import {Header} from "../reef-extends/param.decorators";
 import {TestService} from "../services/test.service";
+import {AfterExecHook} from "../reef-extends/hook.decorators";
 
 @Controller('bar')
 export default class BarController extends BaseController {
@@ -89,6 +90,18 @@ export default class BarController extends BaseController {
   customResponseFunc2() {
     return this.reef()
         .headers({'x-custom-hd1': 'true', 'x-custom-hd2': 'true2' })
+  }
+
+  @AfterExecHook({param: 'test'})
+  @Get('after-exec-hook')
+  afterExecHook() {
+    return { afterExecHook: true }
+  }
+
+  @AfterExecHook({param: 'test'})
+  @Get('after-exec-hook-error')
+  afterExecHookError() {
+    throw new Error('a-custom-error')
   }
 
 }

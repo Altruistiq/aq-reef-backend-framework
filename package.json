@@ -11,6 +11,7 @@
     "pkg",
     "README.md"
   ],
+  "prettier": "@altruistiq/dev-code-formatting-utils/prettier",
   "scripts": {
     "test": "./scripts/run-tests.sh",
     "tsc": "tsc",

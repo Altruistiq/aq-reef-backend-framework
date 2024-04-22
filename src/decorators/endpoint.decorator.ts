@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { BaseController } from '../helpers';
 
 import {
+	AfterResponseHookFn,
 	EndpointDecorator,
 	EndpointInfo,
 	PreHookFn,
@@ -11,6 +12,7 @@ import {
 } from '../helpers/aq-base.types';
 
 import {
+	afterResponseExecutionHookSymbol,
 	directMiddlewareSymbol,
 	endpointMetaSymbol,
 	preExecutionHookSymbol,
@@ -116,6 +118,21 @@ export function createEndpointMiddleware(subject: symbol, params: unknown) {
 		controllerMiddlewareInfo[methodName].push(params);
 		Reflect.defineMetadata(subject, controllerMiddlewareInfo, target);
 	};
+}
+
+export function createAfterResponseExecutionHook(params: unknown, hook: AfterResponseHookFn) {
+	return function (target: BaseController, methodName: string) {
+		const endpointHookInfo =
+			Reflect.getMetadata(afterResponseExecutionHookSymbol, target, methodName) || [];
+		endpointHookInfo.push({ params, hook });
+		Reflect.defineMetadata(
+			afterResponseExecutionHookSymbol,
+			endpointHookInfo,
+			target,
+			methodName,
+		);
+	};
+
 }
 
 /**
