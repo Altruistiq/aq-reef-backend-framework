@@ -65,6 +65,7 @@ export abstract class BaseController {
     }
 
     // Dummy function in order to run after the initialization of controller
+    // @skipcq - this method is used by the library users
     protected afterInit() {
     }
 
@@ -142,7 +143,7 @@ export abstract class BaseController {
         const endpointPath = `${basePath}/${endpoint.path}`;
         const path = `/${endpointPath}`.replace(/\/+/g, '/');
         const endpointMethod: REST_METHODS = (
-            method || this.getMethod(endpoint.path)
+            method || BaseController.getMethod(endpoint.path)
         ).toUpperCase() as REST_METHODS;
 
         const endpointFunc = this.createEndpointFunc(
@@ -447,7 +448,7 @@ export abstract class BaseController {
      * @return {string}
      * @private
      */
-    private getMethod(endpointPath: string): REST_METHODS {
+    private static getMethod(endpointPath: string): REST_METHODS {
         let method = REST_METHODS.POST;
         if (endpointPath.includes('get') || endpointPath.includes('list'))
             method = REST_METHODS.GET;
@@ -485,6 +486,7 @@ export abstract class BaseController {
         logger.debug(`Controller: "${controllerName}" Registered`);
     }
 
+    // @skipcq - this method is used by the library users
     public reef(): CustomResponse {
         return new CustomResponse();
     }
