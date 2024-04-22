@@ -1,6 +1,6 @@
 import chai, { assert } from 'chai';
 import sinon from 'sinon';
-describe('Testing Decorators', async () => {
+describe('Testing Decorators',() => {
 	afterEach(() => {
 		sinon.restore();
 	})
@@ -19,7 +19,7 @@ describe('Testing Decorators', async () => {
 		const testVal = 'simplePOSTResponse';
 		const { body, status } = await chai
 			.request(global._expressApp)
-			.post(`/api/v1/bar`)
+			.post('/api/v1/bar')
 			.send({ obj: { test: testVal } });
 		assert.equal(status, 200);
 		assert.equal(body.val, testVal);
@@ -29,7 +29,7 @@ describe('Testing Decorators', async () => {
 		const testVal = 'simplePUTResponse';
 		const { body, status } = await chai
 			.request(global._expressApp)
-			.put(`/api/v1/bar`)
+			.put('/api/v1/bar')
 			.send({ val: testVal });
 		assert.equal(status, 200);
 		assert.equal(body.val, testVal);
@@ -39,7 +39,7 @@ describe('Testing Decorators', async () => {
 		const testVal = 'simpleDELETEResponse';
 		const { body, status } = await chai
 			.request(global._expressApp)
-			.put(`/api/v1/bar`)
+			.put('/api/v1/bar')
 			.send({ val: testVal });
 		assert.equal(status, 200);
 		assert.equal(body.val, testVal);
@@ -49,7 +49,7 @@ describe('Testing Decorators', async () => {
 		const testVal = 'simplePATCHResponse';
 		const { body, status } = await chai
 			.request(global._expressApp)
-			.put(`/api/v1/bar`)
+			.put('/api/v1/bar')
 			.send({ val: testVal });
 		assert.equal(status, 200);
 		assert.equal(body.val, testVal);
@@ -88,7 +88,7 @@ describe('Testing Decorators', async () => {
 	it('should be able to use res for custom response', async () => {
 		const { body, status } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/decorator-res-test`)
+			.get('/api/v1/bar/decorator-res-test')
 			.send();
 		assert.equal(status, 200);
 		assert.equal(body.success, true);
@@ -97,7 +97,7 @@ describe('Testing Decorators', async () => {
 	it('should be able to use build in and extended casters', async () => {
 		const { body, status } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/caster-test?myDate=2022-10-11&isBool=true&age=12`)
+			.get('/api/v1/bar/caster-test?myDate=2022-10-11&isBool=true&age=12')
 			.send();
 		assert.equal(status, 200);
 		assert.equal(body.myDate, new Date('2022-10-11').toJSON());
@@ -120,7 +120,7 @@ describe('Testing Decorators', async () => {
 	it('should be able use middleware (testing AuthRoles custom decorator) -- success', async () => {
 		const { status } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/custom-decorator-role`)
+			.get('/api/v1/bar/custom-decorator-role')
 			.set('x-role', 'USER')
 			.send();
 		assert.equal(status, 200);
@@ -129,7 +129,7 @@ describe('Testing Decorators', async () => {
 	it('should be able use middleware (testing AuthRoles custom decorator) -- fail', async () => {
 		const { body, status } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/custom-decorator-role`)
+			.get('/api/v1/bar/custom-decorator-role')
 			.set('x-role', 'USER_2')
 			.send();
 		assert.notEqual(status, 200);
@@ -139,7 +139,7 @@ describe('Testing Decorators', async () => {
 	it('should be able use middleware (testing CAuthRoles custom decorator) -- success', async () => {
 		const { status } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/foo/controller-level-middleware`)
+			.get('/api/v1/foo/controller-level-middleware')
 			.set('x-role', 'USER')
 			.send();
 		assert.equal(status, 200);
@@ -148,14 +148,14 @@ describe('Testing Decorators', async () => {
 	it('should be able use middleware (testing AuthRoles override CAuthRoles on custom decorator)', async () => {
 		const { status: failStatus } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/foo/endpoint-middleware-override`)
+			.get('/api/v1/foo/endpoint-middleware-override')
 			.set('x-role', 'ADMIN')
 			.send();
 		assert.equal(failStatus, 505);
 
 		const { status: successStatus } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/foo/endpoint-middleware-override`)
+			.get('/api/v1/foo/endpoint-middleware-override')
 			.set('x-role', 'USER')
 			.send();
 		assert.equal(successStatus, 200);
@@ -164,7 +164,7 @@ describe('Testing Decorators', async () => {
 	it('should not reach the controller with the wrong filename pattern', async () => {
 		const { status } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/not-reachable`)
+			.get('/api/v1/not-reachable')
 			.send();
 		assert.equal(status, 404);
 	});
@@ -172,7 +172,7 @@ describe('Testing Decorators', async () => {
 	it('should be able to create custom param decorators', async () => {
 		const { body } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/custom-param-decorator-test`)
+			.get('/api/v1/bar/custom-param-decorator-test')
 			.set('x-test-header', 'gotcha')
 			.send();
 		assert.equal(body.header, 'gotcha');
@@ -181,7 +181,7 @@ describe('Testing Decorators', async () => {
 	it('should be able load controller files recursively in all directories', async () => {
 		const { body } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/recursive`)
+			.get('/api/v1/recursive')
 			.send();
 		assert.equal(body.success, true);
 	});
@@ -189,7 +189,7 @@ describe('Testing Decorators', async () => {
 	it('should be able invoke service with log decorator', async () => {
 		const { body } = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/service-invoke`)
+			.get('/api/v1/bar/service-invoke')
 			.send();
 		assert.equal(body.success, true);
 	});
@@ -197,7 +197,7 @@ describe('Testing Decorators', async () => {
 	it('should be able to set custom status and headers', async () => {
 		const res = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/custom-response-func`)
+			.get('/api/v1/bar/custom-response-func')
 			.send();
 		assert.equal(res.body.customVal, 'custom-res');
 		assert.equal(res.statusCode, 222);
@@ -207,7 +207,7 @@ describe('Testing Decorators', async () => {
 	it('should be able to set custom headers test 2', async () => {
 		const res = await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/custom-response-func-2`)
+			.get('/api/v1/bar/custom-response-func-2')
 			.send();
 		assert.equal(res.headers['x-custom-hd1'], 'true');
 		assert.equal(res.headers['x-custom-hd2'], 'true2');
@@ -216,9 +216,9 @@ describe('Testing Decorators', async () => {
 	it('should be able to execute the post response hook', async () => {
 		const stub = sinon.stub(console, 'debug');
 
-		const res = await chai
+		await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/after-exec-hook?param1=test`)
+			.get('/api/v1/bar/after-exec-hook?param1=test')
 			.send();
 
 		sinon.assert.calledOnce(stub);
@@ -234,9 +234,9 @@ describe('Testing Decorators', async () => {
 	it('should be able to execute the post response hook when error', async () => {
 		const stub = sinon.stub(console, 'debug');
 
-		const res = await chai
+		await chai
 			.request(global._expressApp)
-			.get(`/api/v1/bar/after-exec-hook-error`)
+			.get('/api/v1/bar/after-exec-hook-error')
 			.send();
 
 

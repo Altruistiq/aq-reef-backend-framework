@@ -168,6 +168,7 @@ export abstract class BaseController {
         };
     }
 
+    // @skipcq - cannot figure out the proper type for this
     getMiddleware(target: any, methodName: string) {
         const directMiddleware = [];
         const directMiddlewareMeta = Reflect.getMetadata(
@@ -253,6 +254,7 @@ export abstract class BaseController {
         paramMeta: EndpointParamMeta[],
         autoResponse: boolean,
         path: string,
+        // @skipcq - cannot figure out the proper type for this
         targetClass: any,
         bundleName: string | undefined,
         endpointHooks: PreHook[],

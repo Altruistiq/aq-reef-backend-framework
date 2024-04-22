@@ -6,6 +6,7 @@ export function AfterExecHook(params: unknown) {
     return createAfterResponseExecutionHook(params, afterResponseHookFn)
 }
 
+// @skipcq - the type requires this function to be async
 async function afterResponseHookFn(
     params: unknown,
     endpointVariables: unknown[],
