@@ -52,8 +52,10 @@
     "@commitlint/cli": "^19.2.1",
     "@commitlint/config-conventional": "^19.1.0",
     "@release-it/conventional-changelog": "^8.0.1",
+    "@types/sinon": "^17.0.3",
     "express": "^4.19.2",
     "lodash": "^4.17.21",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "sinon": "^17.0.1"
   }
 }
