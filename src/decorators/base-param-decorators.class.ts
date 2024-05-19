@@ -173,7 +173,7 @@ export function getVariableName(
 	}
 
 	funcDefParams = funcDefParams.substring(1, funcDefParams.length - 1);
-	const paramsArr = funcDefParams.split(',');
+	const paramsArr = splitMethodParams(funcDefParams);
 
 	const paramToRetun = paramsArr[index];
 	if (!paramToRetun)
@@ -183,4 +183,24 @@ export function getVariableName(
 		return paramToRetun.split('=')[0].trim();
 	}
 	return paramToRetun.trim();
+}
+
+function splitMethodParams(methodParamStr: string) {
+	let charIndex = 0;
+	let openParenthesisCount = 0;
+	let paramStart = 0
+	const variableNames = []
+	while (charIndex < methodParamStr.length) {
+		const c = methodParamStr.charAt(charIndex++);
+		if (c === '(') {
+			openParenthesisCount++;
+		} else if (c === ')') {
+			openParenthesisCount--;
+		}
+		if (openParenthesisCount === 0 && paramStart !== charIndex && (c === ',' || charIndex === methodParamStr.length)) {
+			variableNames.push(methodParamStr.substring(paramStart, c === ',' ? charIndex - 1 : charIndex))
+			paramStart = charIndex
+		}
+	}
+	return variableNames
 }
