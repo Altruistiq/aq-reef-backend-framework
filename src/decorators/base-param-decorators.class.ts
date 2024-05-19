@@ -188,6 +188,8 @@ export function getVariableName(
 function splitMethodParams(methodParamStr: string) {
 	let charIndex = 0;
 	let openParenthesisCount = 0;
+	let openBracketCount = 0;
+	let openCurlyBracketCount = 0;
 	let paramStart = 0
 	const variableNames = []
 	while (charIndex < methodParamStr.length) {
@@ -197,7 +199,20 @@ function splitMethodParams(methodParamStr: string) {
 		} else if (c === ')') {
 			openParenthesisCount--;
 		}
-		if (openParenthesisCount === 0 && paramStart !== charIndex && (c === ',' || charIndex === methodParamStr.length)) {
+		if (c === '[') {
+			openBracketCount++;
+		} else if (c === ']') {
+			openBracketCount--;
+		}
+		if (c === '{') {
+			openCurlyBracketCount++;
+		} else if (c === '}') {
+			openCurlyBracketCount--;
+		}
+		if (openParenthesisCount === 0 &&
+			openBracketCount === 0 &&
+			openCurlyBracketCount === 0 &&
+			paramStart !== charIndex && (c === ',' || charIndex === methodParamStr.length)) {
 			variableNames.push(methodParamStr.substring(paramStart, c === ',' ? charIndex - 1 : charIndex))
 			paramStart = charIndex
 		}
