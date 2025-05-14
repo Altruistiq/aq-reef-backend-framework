@@ -22,3 +22,4 @@ export {
 	Next,
 } from './base-param-decorators.class';
 export { Log, Logger } from './log.decorator';
+export {} from './symbols';
