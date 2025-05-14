@@ -22,3 +22,13 @@ export {
 	Next,
 } from './base-param-decorators.class';
 export { Log, Logger } from './log.decorator';
+export {
+  endpointMetaSymbol,
+  paramMetaSymbol,
+  controllerMetaSymbol,
+  loggerMetadataKeySymbol,
+  middlewareControllerKey,
+  directMiddlewareSymbol,
+  preExecutionHookSymbol,
+  afterResponseExecutionHookSymbol,
+} from './symbols';
