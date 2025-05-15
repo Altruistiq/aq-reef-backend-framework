@@ -107,6 +107,9 @@ function defineEndpoint(
 
 		endpointInfo.push(payload);
 		Reflect.defineMetadata(endpointMetaSymbol, endpointInfo, target);
+
+		// add the payload info to the method metadata
+		Reflect.defineMetadata(endpointMetaSymbol, payload, target, methodName);
 	};
 }
 
